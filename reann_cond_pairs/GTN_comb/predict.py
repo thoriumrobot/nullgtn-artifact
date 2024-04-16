@@ -53,7 +53,7 @@ def getobj(file):
       s+=char
    return s
 
-directory = '/home/k/ks225/nullproj/excprm/reann_cond_pairs/'
+directory = '/usr/src/app/nullgtn-artifact/reann_cond_pairs/'
 
 primitive_types=["void", "byte", "short", "int", "long", "float", "double", "char", "boolean", "voidModifier", "byteModifier", "shortModifier", "intModifier", "longModifier", "floatModifier", "doubleModifier", "charModifier", "booleanModifier", "NonNullMarker", "final Modifier", "ArrayType", "ClassOrInterfaceType", "VariableDeclarationExpr"]
 nodeList=["MethodDeclaration", "FieldDeclaration"]
