@@ -1,6 +1,6 @@
 
 
-conda create --name nullgtn python=3.8 openjdk
+conda create --name nullgtn python=3.8 openjdk=8 maven
 conda activate nullgtn
 git clone https://github.com/thoriumrobot/nullgtn-artifact
 cd nullgtn-artifact
