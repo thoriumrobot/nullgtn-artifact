@@ -5,6 +5,7 @@ import numpy as np
 from scipy.sparse.csgraph import laplacian
 from sklearn.cluster import KMeans
 import json
+import sys
 
 def getobj(file):
    while True:
@@ -24,7 +25,9 @@ def getobj(file):
    return s
 
 max_size=1195
-modDir="/usr/src/app/nullgtn-artifact/reann_cond_pairs/"
+#modDir="/usr/src/app/nullgtn-artifact/reann_cond_pairs/"
+cluster=sys.argv[1]
+modDir=sys.argv[2]
 
 def pad_adjacency_matrices(adjacency_matrices):
     global max_size
@@ -45,7 +48,7 @@ with open(modDir+'kmmodel.pkl', 'rb') as f:
 # Now you can use `loaded_model` as you would normally use a fitted KMeans object
 # For example, you can predict the cluster for new data
 
-with open(modDir+"temp_output.json", "r") as file:
+with open(modDir+"temp_output_"+cluster+".json", "r") as file:
     obj_str = getobj(file)
     #if not obj_str:
     #    break

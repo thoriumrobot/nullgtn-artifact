@@ -36,6 +36,10 @@ public class App {
     main() also tries to prune each AST based on several considerations.
     */
     public static void main(String[] args) {
+        modDir = args[1]+"reann_cond_pairs/";
+        rootDir = new File(args[2]);
+        saveDir = args[3];
+
         processJavaFiles(rootDir, "");
     }
 
@@ -117,72 +121,108 @@ public class App {
                                     JSONObject graphJson =
                                             converters.get(pair[i].getAbsolutePath()).toJson();
                                     writer.write(graphJson.toString(4) + "\n");
+
+                                    BufferedWriter writer_cluster =
+                                        new BufferedWriter(
+                                                new FileWriter(modDir + "temp_output_"+i+".json"));
+                                    JSONObject graphJson_cluster =
+                                        converters.get(pair[i].getAbsolutePath()).toJson();
+                                        writer_cluster.write(graphJson_cluster.toString(4) + "\n");
+
+                                    writer_cluster.close();
                                 }
 
                                 writer.close();
 
-                                // predict the nodes
-                                ProcessBuilder processBuilder =
-                                        new ProcessBuilder(
-                                                "python", modDir + "GTN_comb/predict.py", "data1");
-                                Process process = processBuilder.start();
-                                BufferedReader reader =
-                                        new BufferedReader(
-                                                new InputStreamReader(process.getInputStream()));
-                                int exitCode = process.waitFor();
+                                // cluster class
+                                String[] cluster=new String[2];
 
-                                if (exitCode == 0) {
-                                    fileCount.putIfAbsent(pair[0].getAbsolutePath(), 0);
-                                    fileCount.put(
-                                            pair[0].getAbsolutePath(),
-                                            fileCount.get(pair[0].getAbsolutePath()) + 1);
-
-                                    fileCount.putIfAbsent(pair[1].getAbsolutePath(), 0);
-                                    fileCount.put(
-                                            pair[1].getAbsolutePath(),
-                                            fileCount.get(pair[1].getAbsolutePath()) + 1);
-
-                                    scores.putIfAbsent(pair[0].getAbsolutePath(), new HashMap<>());
-                                    scores.putIfAbsent(pair[1].getAbsolutePath(), new HashMap<>());
-
-                                    // Add score to the node's inner HashMap
-                                    String line = "";
-                                    int lineCount = 0;
-
+                                for(int i = 0; i < 2; i++) {
+                                    ProcessBuilder processBuilder =
+                                            new ProcessBuilder("python", String.valueOf(i), modDir + "predkmm.py");
+                                    Process process = processBuilder.start();
+                                    BufferedReader reader =
+                                            new BufferedReader(
+                                                    new InputStreamReader(process.getInputStream()));
+                                    StringBuilder output = new StringBuilder();
+                                    String line;
                                     while ((line = reader.readLine()) != null) {
-                                        int rnno, fidx;
-                                        if (lineCount
-                                                < converters.get(pair[0].getAbsolutePath())
-                                                        .rlvCount) {
-                                            fidx = 0;
-                                            rnno = lineCount;
-                                        } else {
-                                            fidx = 1;
-                                            rnno =
-                                                    lineCount
-                                                            - converters.get(
-                                                                            pair[0]
-                                                                                    .getAbsolutePath())
-                                                                    .rlvCount;
-                                        }
-
-                                        scores.get(pair[fidx].getAbsolutePath())
-                                                .putIfAbsent(rnno, 0.0);
-                                        scores.get(pair[fidx].getAbsolutePath())
-                                                .put(
-                                                        rnno,
-                                                        scores.get(pair[fidx].getAbsolutePath())
-                                                                        .get(rnno)
-                                                                + Double.parseDouble(line));
-
-                                        lineCount++;
+                                        output.append(line).append("\n");
+                                    }
+                                    int exitCode = process.waitFor();
+        
+                                    if (exitCode == 0) {
+                                        cluster[i] = "data" + String.valueOf(output.toString().charAt(0));
+                                    } else {
+                                        cluster[i] = "data1";
                                     }
                                 }
+
+                                // predict the nodes
+                                for(int i = 0; i < 2; i++) {
+                                    ProcessBuilder processBuilder =
+                                            new ProcessBuilder(
+                                                    "python", modDir + "GTN_comb/predict.py", cluster[i], rootDir);
+                                    Process process = processBuilder.start();
+                                    BufferedReader reader =
+                                            new BufferedReader(
+                                                    new InputStreamReader(process.getInputStream()));
+                                    int exitCode = process.waitFor();
+
+                                    if (exitCode == 0) {
+                                        fileCount.putIfAbsent(pair[i].getAbsolutePath(), 0);
+                                        fileCount.put(
+                                                pair[i].getAbsolutePath(),
+                                                fileCount.get(pair[i].getAbsolutePath()) + 1);
+
+                                        scores.putIfAbsent(pair[i].getAbsolutePath(), new HashMap<>());
+
+                                        // Add score to the node's inner HashMap
+                                        String line = "";
+                                        int lineCount = 0;
+
+                                        while ((line = reader.readLine()) != null) {
+                                            int rnno, fidx;
+                                            if (lineCount
+                                                    < converters.get(pair[0].getAbsolutePath())
+                                                            .rlvCount) {
+                                                if(i==1) {
+                                                    continue;
+                                                }
+
+                                                fidx = 0;
+                                                rnno = lineCount;
+                                            } else {
+                                                if(i==0) {
+                                                    continue;
+                                                }
+
+                                                fidx = 1;
+                                                rnno =
+                                                        lineCount
+                                                                - converters.get(
+                                                                                pair[0]
+                                                                                        .getAbsolutePath())
+                                                                        .rlvCount;
+                                            }
+
+                                            scores.get(pair[fidx].getAbsolutePath())
+                                                    .putIfAbsent(rnno, 0.0);
+                                            scores.get(pair[fidx].getAbsolutePath())
+                                                    .put(
+                                                            rnno,
+                                                            scores.get(pair[fidx].getAbsolutePath())
+                                                                            .get(rnno)
+                                                                    + Double.parseDouble(line));
+
+                                            lineCount++;
+                                        }
+                                    }
+                                }
+
                             }
                         }
 
-                        File delete_file = new File(modDir + "temp_output.json");
-                        delete_file.delete();
                     }
 
                     // reannotate all the files
