@@ -54,7 +54,7 @@ def getobj(file):
    return s
 
 #directory = '/usr/src/app/nullgtn-artifact/reann_cond_pairs/'
-directory = sys.argv[2]
+directory = sys.argv[2]+"reann_summ/"
 
 primitive_types=["void", "byte", "short", "int", "long", "float", "double", "char", "boolean", "voidModifier", "byteModifier", "shortModifier", "intModifier", "longModifier", "floatModifier", "doubleModifier", "charModifier", "booleanModifier", "NonNullMarker", "final Modifier", "ArrayType", "ClassOrInterfaceType", "VariableDeclarationExpr"]
 nodeList=["MethodDeclaration", "FieldDeclaration"]

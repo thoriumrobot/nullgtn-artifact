@@ -1,0 +1,625 @@
+{
+    "nodes": [
+        {
+            "nullable": 0,
+            "id": 0,
+            "type": ["CompilationUnit"]
+        },
+        {
+            "nullable": 0,
+            "id": 1,
+            "type": ["PackageDeclaration"]
+        },
+        {
+            "nullable": 0,
+            "id": 2,
+            "type": ["Name"]
+        },
+        {
+            "nullable": 0,
+            "id": 3,
+            "type": ["Name"]
+        },
+        {
+            "nullable": 0,
+            "id": 4,
+            "type": ["Name"]
+        },
+        {
+            "nullable": 0,
+            "id": 5,
+            "type": ["Name"]
+        }
+    ],
+    "nameList": {},
+    "adjacencyList": {
+        "0": [
+            1,
+            2
+        ],
+        "1": [3],
+        "2": [4],
+        "3": [5]
+    }
+}
+{
+    "nodes": [
+        {
+            "nullable": 0,
+            "id": 0,
+            "type": ["CompilationUnit"]
+        },
+        {
+            "nullable": 0,
+            "id": 1,
+            "type": ["PackageDeclaration"]
+        },
+        {
+            "nullable": 0,
+            "id": 2,
+            "type": ["Name"]
+        },
+        {
+            "nullable": 0,
+            "id": 3,
+            "type": ["Name"]
+        },
+        {
+            "nullable": 0,
+            "id": 4,
+            "type": ["Name"]
+        },
+        {
+            "nullable": 0,
+            "id": 5,
+            "type": ["Name"]
+        },
+        {
+            "nullable": 0,
+            "id": 6,
+            "type": ["Name"]
+        },
+        {
+            "nullable": 0,
+            "id": 7,
+            "type": ["ImportDeclaration"]
+        },
+        {
+            "nullable": 0,
+            "id": 8,
+            "type": ["Name"]
+        },
+        {
+            "nullable": 0,
+            "id": 9,
+            "type": ["Name"]
+        },
+        {
+            "nullable": 0,
+            "id": 10,
+            "type": ["Name"]
+        },
+        {
+            "nullable": 0,
+            "id": 11,
+            "type": ["ImportDeclaration"]
+        },
+        {
+            "nullable": 0,
+            "id": 12,
+            "type": ["Name"]
+        },
+        {
+            "nullable": 0,
+            "id": 13,
+            "type": ["Name"]
+        },
+        {
+            "nullable": 0,
+            "id": 14,
+            "type": ["Name"]
+        },
+        {
+            "nullable": 0,
+            "id": 15,
+            "type": ["Name"]
+        },
+        {
+            "nullable": 0,
+            "id": 16,
+            "type": ["ImportDeclaration"]
+        },
+        {
+            "nullable": 0,
+            "id": 17,
+            "type": ["Name"]
+        },
+        {
+            "nullable": 0,
+            "id": 18,
+            "type": ["Name"]
+        },
+        {
+            "nullable": 0,
+            "id": 19,
+            "type": ["Name"]
+        },
+        {
+            "nullable": 0,
+            "id": 20,
+            "type": ["Name"]
+        },
+        {
+            "nullable": 0,
+            "id": 21,
+            "type": ["Name"]
+        },
+        {
+            "nullable": 0,
+            "id": 22,
+            "type": ["Name"]
+        },
+        {
+            "nullable": 0,
+            "id": 23,
+            "type": ["ClassOrInterfaceDeclaration"]
+        },
+        {
+            "nullable": 0,
+            "id": 24,
+            "type": ["Modifier"]
+        },
+        {
+            "nullable": 0,
+            "id": 25,
+            "type": ["SimpleName"]
+        },
+        {
+            "nullable": 0,
+            "id": 26,
+            "type": ["MethodDeclaration"]
+        },
+        {
+            "nullable": 0,
+            "id": 27,
+            "type": [
+                "MarkerAnnotationExpr",
+                "NonNullMarker"
+            ]
+        },
+        {
+            "nullable": 0,
+            "id": 28,
+            "type": ["SimpleName"]
+        },
+        {
+            "nullable": 0,
+            "id": 29,
+            "type": ["Parameter"]
+        },
+        {
+            "nullable": 0,
+            "id": 30,
+            "type": [
+                "MarkerAnnotationExpr",
+                "NonNullMarker"
+            ]
+        },
+        {
+            "nullable": 0,
+            "id": 31,
+            "type": ["ClassOrInterfaceType"]
+        },
+        {
+            "nullable": 0,
+            "id": 32,
+            "type": ["SimpleName"]
+        },
+        {
+            "nullable": 0,
+            "id": 33,
+            "type": ["SimpleName"]
+        },
+        {
+            "nullable": 0,
+            "id": 34,
+            "type": ["ClassOrInterfaceType"]
+        },
+        {
+            "nullable": 0,
+            "id": 35,
+            "type": ["SimpleName"]
+        },
+        {
+            "nullable": 0,
+            "id": 36,
+            "type": ["ClassOrInterfaceType"]
+        },
+        {
+            "nullable": 0,
+            "id": 37,
+            "type": ["SimpleName"]
+        },
+        {
+            "nullable": 0,
+            "id": 38,
+            "type": ["MethodDeclaration"]
+        },
+        {
+            "nullable": 0,
+            "id": 39,
+            "type": [
+                "MarkerAnnotationExpr",
+                "NonNullMarker"
+            ]
+        },
+        {
+            "nullable": 0,
+            "id": 40,
+            "type": ["SimpleName"]
+        },
+        {
+            "nullable": 0,
+            "id": 41,
+            "type": ["Parameter"]
+        },
+        {
+            "nullable": 0,
+            "id": 42,
+            "type": [
+                "MarkerAnnotationExpr",
+                "NonNullMarker"
+            ]
+        },
+        {
+            "nullable": 0,
+            "id": 43,
+            "type": ["ClassOrInterfaceType"]
+        },
+        {
+            "nullable": 0,
+            "id": 44,
+            "type": ["SimpleName"]
+        },
+        {
+            "nullable": 0,
+            "id": 45,
+            "type": ["WildcardType"]
+        },
+        {
+            "nullable": 0,
+            "id": 46,
+            "type": ["ClassOrInterfaceType"]
+        },
+        {
+            "nullable": 0,
+            "id": 47,
+            "type": [
+                "MarkerAnnotationExpr",
+                "NonNullMarker"
+            ]
+        },
+        {
+            "nullable": 0,
+            "id": 48,
+            "type": ["SimpleName"]
+        },
+        {
+            "nullable": 0,
+            "id": 49,
+            "type": ["SimpleName"]
+        },
+        {
+            "nullable": 0,
+            "id": 50,
+            "type": ["ClassOrInterfaceType"]
+        },
+        {
+            "nullable": 0,
+            "id": 51,
+            "type": ["SimpleName"]
+        },
+        {
+            "nullable": 0,
+            "id": 52,
+            "type": ["ClassOrInterfaceType"]
+        },
+        {
+            "nullable": 0,
+            "id": 53,
+            "type": ["SimpleName"]
+        },
+        {
+            "nullable": 0,
+            "id": 54,
+            "type": ["ClassOrInterfaceType"]
+        },
+        {
+            "nullable": 0,
+            "id": 55,
+            "type": ["SimpleName"]
+        },
+        {
+            "nullable": 0,
+            "id": 56,
+            "type": ["ClassOrInterfaceType"]
+        },
+        {
+            "nullable": 0,
+            "id": 57,
+            "type": ["SimpleName"]
+        },
+        {
+            "nullable": 0,
+            "id": 58,
+            "type": ["MethodDeclaration"]
+        },
+        {
+            "nullable": 0,
+            "id": 59,
+            "type": [
+                "MarkerAnnotationExpr",
+                "NonNullMarker"
+            ]
+        },
+        {
+            "nullable": 0,
+            "id": 60,
+            "type": [
+                "MarkerAnnotationExpr",
+                "OverrideMarker"
+            ]
+        },
+        {
+            "nullable": 0,
+            "id": 61,
+            "type": ["SimpleName"]
+        },
+        {
+            "nullable": 0,
+            "id": 62,
+            "type": ["ClassOrInterfaceType"]
+        },
+        {
+            "nullable": 0,
+            "id": 63,
+            "type": ["SimpleName"]
+        },
+        {
+            "nullable": 0,
+            "id": 64,
+            "type": ["ClassOrInterfaceType"]
+        },
+        {
+            "nullable": 0,
+            "id": 65,
+            "type": ["SimpleName"]
+        },
+        {
+            "nullable": 0,
+            "id": 66,
+            "type": ["ClassOrInterfaceType"]
+        },
+        {
+            "nullable": 0,
+            "id": 67,
+            "type": ["SimpleName"]
+        },
+        {
+            "nullable": 0,
+            "id": 68,
+            "type": ["TypeParameter"]
+        },
+        {
+            "nullable": 0,
+            "id": 69,
+            "type": ["SimpleName"]
+        },
+        {
+            "nullable": 0,
+            "id": 70,
+            "type": ["TypeParameter"]
+        },
+        {
+            "nullable": 0,
+            "id": 71,
+            "type": ["SimpleName"]
+        },
+        {
+            "nullable": 0,
+            "id": 72,
+            "type": ["ClassOrInterfaceType"]
+        },
+        {
+            "nullable": 0,
+            "id": 73,
+            "type": ["SimpleName"]
+        },
+        {
+            "nullable": 0,
+            "id": 74,
+            "type": ["ClassOrInterfaceType"]
+        },
+        {
+            "nullable": 0,
+            "id": 75,
+            "type": ["SimpleName"]
+        },
+        {
+            "nullable": 0,
+            "id": 76,
+            "type": ["ClassOrInterfaceType"]
+        },
+        {
+            "nullable": 0,
+            "id": 77,
+            "type": ["SimpleName"]
+        }
+    ],
+    "nameList": {
+        "getAll": [40],
+        "Iterable<? extends @NonNull K>": [41],
+        "Iterable": [
+            43,
+            44
+        ],
+        "keys": [49],
+        "synchronous": [61],
+        "AsyncCache": [
+            72,
+            73
+        ],
+        "K": [
+            32,
+            48,
+            64,
+            65,
+            69,
+            54,
+            55,
+            74,
+            75,
+            29,
+            46,
+            31
+        ],
+        "LoadingCache<K, V>": [58],
+        "CompletableFuture": [
+            34,
+            50,
+            35,
+            51
+        ],
+        "CompletableFuture<V>": [26],
+        "V": [
+            66,
+            67,
+            36,
+            37,
+            71,
+            56,
+            57,
+            76,
+            77
+        ],
+        "AsyncLoadingCache": [25],
+        "get": [28],
+        "LoadingCache": [
+            62,
+            63
+        ],
+        "Map": [
+            52,
+            53
+        ],
+        "key": [33],
+        "CompletableFuture<Map<K, V>>": [38]
+    },
+    "adjacencyList": {
+        "66": [67],
+        "23": [
+            24,
+            25,
+            26,
+            38,
+            58,
+            68,
+            70,
+            72
+        ],
+        "45": [46],
+        "68": [69],
+        "46": [
+            47,
+            48
+        ],
+        "26": [
+            27,
+            28,
+            29,
+            34
+        ],
+        "29": [
+            30,
+            31,
+            33
+        ],
+        "70": [71],
+        "72": [
+            73,
+            74,
+            76
+        ],
+        "50": [
+            51,
+            52
+        ],
+        "74": [75],
+        "52": [
+            53,
+            54,
+            56
+        ],
+        "31": [32],
+        "76": [77],
+        "54": [55],
+        "11": [13],
+        "12": [14],
+        "34": [
+            35,
+            36
+        ],
+        "56": [57],
+        "13": [15],
+        "36": [37],
+        "58": [
+            59,
+            60,
+            61,
+            62
+        ],
+        "16": [18],
+        "38": [
+            39,
+            40,
+            41,
+            50
+        ],
+        "17": [19],
+        "18": [20],
+        "19": [21],
+        "0": [
+            1,
+            2,
+            7,
+            8,
+            11,
+            12,
+            16,
+            17,
+            23
+        ],
+        "1": [3],
+        "2": [4],
+        "3": [5],
+        "4": [6],
+        "7": [9],
+        "8": [10],
+        "62": [
+            63,
+            64,
+            66
+        ],
+        "41": [
+            42,
+            43,
+            49
+        ],
+        "64": [65],
+        "20": [22],
+        "43": [
+            44,
+            45
+        ]
+    }
+}

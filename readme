@@ -1,4 +1,9 @@
+NullGTN
+-------
 
+A tool that automatically reannotates Java projects using graph learning models.
+
+Prerequisites:
 
 conda create --name nullgtn python=3.8 openjdk=11.0 maven -c anaconda -c conda-forge
 conda activate nullgtn
@@ -6,4 +11,12 @@ git clone https://github.com/thoriumrobot/nullgtn-artifact
 cd nullgtn-artifact
 pip install -r pip_new.txt
 pip install torch_geometric pyg_lib torch_scatter torch_sparse torch_cluster torch_spline_conv -f https://data.pyg.org/whl/torch-2.0.0+cu117.html
+
+Usage:
+
+./nullgtn.sh <nullgtn root> <input project> <output directory>
+
+Example:
+
+./example.sh
 

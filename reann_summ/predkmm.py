@@ -27,7 +27,7 @@ def getobj(file):
 max_size=1195
 #modDir="/usr/src/app/nullgtn-artifact/reann_cond_pairs/"
 cluster=sys.argv[1]
-modDir=sys.argv[2]
+modDir=sys.argv[2]+"reann_summ/"
 
 def pad_adjacency_matrices(adjacency_matrices):
     global max_size
