@@ -143,7 +143,7 @@ public class App {
                                                     "python",
                                                     modDir + "predkmm.py",
                                                     String.valueOf(i),
-                                                    rootDir.getAbsolutePath());
+                                                    modDir);
                                     Process process = processBuilder.start();
                                     BufferedReader reader =
                                             new BufferedReader(
@@ -173,13 +173,15 @@ public class App {
                                                     "python",
                                                     modDir + "GTN_comb/predict.py",
                                                     cluster[i],
-                                                    rootDir.getAbsolutePath());
+                                                    modDir);
                                     Process process = processBuilder.start();
                                     BufferedReader reader =
                                             new BufferedReader(
                                                     new InputStreamReader(
                                                             process.getInputStream()));
                                     int exitCode = process.waitFor();
+
+                                    System.out.println(exitCode);
 
                                     if (exitCode == 0) {
                                         fileCount.putIfAbsent(pair[i].getAbsolutePath(), 0);
@@ -195,6 +197,8 @@ public class App {
                                         int lineCount = 0;
 
                                         while ((line = reader.readLine()) != null) {
+                                            System.out.println(line);
+
                                             int rnno, fidx;
                                             if (lineCount
                                                     < converters.get(pair[0].getAbsolutePath())

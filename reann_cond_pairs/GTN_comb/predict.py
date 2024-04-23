@@ -54,7 +54,7 @@ def getobj(file):
    return s
 
 #directory = '/usr/src/app/nullgtn-artifact/reann_cond_pairs/'
-directory = sys.argv[2]+"reann_cond_pairs/"
+directory = sys.argv[2]
 
 primitive_types=["void", "byte", "short", "int", "long", "float", "double", "char", "boolean", "voidModifier", "byteModifier", "shortModifier", "intModifier", "longModifier", "floatModifier", "doubleModifier", "charModifier", "booleanModifier", "NonNullMarker", "final Modifier", "ArrayType", "ClassOrInterfaceType", "VariableDeclarationExpr"]
 nodeList=["MethodDeclaration", "FieldDeclaration"]
@@ -253,11 +253,19 @@ with torch.no_grad():
 
 #print(y_pred)
 
+firstlen=len(json_data[0]['nodes'])
+
 for i, flake in enumerate(snowflakes):
-    firstlen=len(json_data[0]['nodes'])
     if flake<firstlen:
        node_types=json_data[0]['nodes'][flake]['type']
     else:
        node_types=json_data[1]['nodes'][flake-firstlen]['type']
     if ("MethodDeclaration" in node_types) or ("FieldDeclaration" in node_types):
-        print(float(y_pred[i,1]-y_pred[i,0]))
+        predvalue=str(float(y_pred[i,1]-y_pred[i,0]))
+        print(predvalue)
+        if ("MethodDeclaration" in node_types):
+          with open(directory+'md.txt', 'a') as file:
+            file.write(predvalue+", ")
+        else:
+          with open(directory+'fd.txt', 'a') as file:
+            file.write(predvalue+", ")

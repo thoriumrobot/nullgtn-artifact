@@ -1,0 +1,280 @@
+{
+    "nodes": [
+        {
+            "nullable": 0,
+            "id": 0,
+            "type": ["CompilationUnit"]
+        },
+        {
+            "nullable": 0,
+            "id": 1,
+            "type": ["PackageDeclaration"]
+        },
+        {
+            "nullable": 0,
+            "id": 2,
+            "type": ["Name"]
+        },
+        {
+            "nullable": 0,
+            "id": 3,
+            "type": ["Name"]
+        },
+        {
+            "nullable": 0,
+            "id": 4,
+            "type": ["Name"]
+        },
+        {
+            "nullable": 0,
+            "id": 5,
+            "type": ["ImportDeclaration"]
+        },
+        {
+            "nullable": 0,
+            "id": 6,
+            "type": ["Name"]
+        },
+        {
+            "nullable": 0,
+            "id": 7,
+            "type": ["Name"]
+        },
+        {
+            "nullable": 0,
+            "id": 8,
+            "type": ["Name"]
+        },
+        {
+            "nullable": 0,
+            "id": 9,
+            "type": ["Name"]
+        },
+        {
+            "nullable": 0,
+            "id": 10,
+            "type": ["Name"]
+        },
+        {
+            "nullable": 0,
+            "id": 11,
+            "type": ["ClassOrInterfaceDeclaration"]
+        },
+        {
+            "nullable": 0,
+            "id": 12,
+            "type": ["Modifier"]
+        },
+        {
+            "nullable": 0,
+            "id": 13,
+            "type": ["Modifier"]
+        },
+        {
+            "nullable": 0,
+            "id": 14,
+            "type": ["SimpleName"]
+        },
+        {
+            "nullable": 0,
+            "id": 15,
+            "type": [
+                "MethodDeclaration",
+                "public Modifier",
+                "static Modifier"
+            ]
+        },
+        {
+            "nullable": 0,
+            "id": 16,
+            "type": ["Modifier"]
+        },
+        {
+            "nullable": 0,
+            "id": 17,
+            "type": ["Modifier"]
+        },
+        {
+            "nullable": 0,
+            "id": 18,
+            "type": ["SimpleName"]
+        },
+        {
+            "nullable": 0,
+            "id": 19,
+            "type": ["Parameter"]
+        },
+        {
+            "nullable": 0,
+            "id": 20,
+            "type": ["ClassOrInterfaceType"]
+        },
+        {
+            "nullable": 0,
+            "id": 21,
+            "type": ["SimpleName"]
+        },
+        {
+            "nullable": 0,
+            "id": 22,
+            "type": ["SimpleName"]
+        },
+        {
+            "nullable": 0,
+            "id": 23,
+            "type": ["Parameter"]
+        },
+        {
+            "nullable": 0,
+            "id": 24,
+            "type": ["ClassOrInterfaceType"]
+        },
+        {
+            "nullable": 0,
+            "id": 25,
+            "type": ["SimpleName"]
+        },
+        {
+            "nullable": 0,
+            "id": 26,
+            "type": ["SimpleName"]
+        },
+        {
+            "nullable": 0,
+            "id": 27,
+            "type": ["ClassOrInterfaceType"]
+        },
+        {
+            "nullable": 0,
+            "id": 28,
+            "type": ["SimpleName"]
+        },
+        {
+            "nullable": 0,
+            "id": 29,
+            "type": ["BlockStmt"]
+        },
+        {
+            "nullable": 0,
+            "id": 30,
+            "type": ["ReturnStmt"]
+        },
+        {
+            "nullable": 0,
+            "id": 31,
+            "type": ["ObjectCreationExpr"]
+        },
+        {
+            "nullable": 0,
+            "id": 32,
+            "type": ["ClassOrInterfaceType"]
+        },
+        {
+            "nullable": 0,
+            "id": 33,
+            "type": ["SimpleName"]
+        },
+        {
+            "nullable": 0,
+            "id": 34,
+            "type": ["NameExpr"]
+        },
+        {
+            "nullable": 0,
+            "id": 35,
+            "type": ["SimpleName"]
+        },
+        {
+            "nullable": 0,
+            "id": 36,
+            "type": ["NameExpr"]
+        },
+        {
+            "nullable": 0,
+            "id": 37,
+            "type": ["SimpleName"]
+        }
+    ],
+    "nameList": {
+        "Storage": [
+            19,
+            20,
+            21
+        ],
+        "KeyValueStoreV1": [
+            32,
+            33
+        ],
+        "build": [18],
+        "converter": [
+            37,
+            26
+        ],
+        "Converter": [
+            23,
+            24,
+            25
+        ],
+        "KeyValueStoreFactory": [14],
+        "KeyValueStore": [
+            27,
+            28,
+            15
+        ],
+        "storage": [
+            35,
+            22
+        ]
+    },
+    "adjacencyList": {
+        "11": [
+            12,
+            13,
+            14,
+            15
+        ],
+        "34": [35],
+        "23": [
+            24,
+            26
+        ],
+        "24": [25],
+        "36": [37],
+        "15": [
+            16,
+            17,
+            18,
+            19,
+            23,
+            27,
+            29
+        ],
+        "27": [28],
+        "29": [30],
+        "19": [
+            20,
+            22
+        ],
+        "0": [
+            1,
+            2,
+            5,
+            6,
+            11
+        ],
+        "1": [3],
+        "2": [4],
+        "5": [7],
+        "6": [8],
+        "7": [9],
+        "8": [10],
+        "30": [31],
+        "20": [21],
+        "31": [
+            32,
+            34,
+            36
+        ],
+        "32": [33]
+    }
+}

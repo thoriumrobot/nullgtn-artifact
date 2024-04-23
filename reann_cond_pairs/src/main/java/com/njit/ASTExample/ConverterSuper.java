@@ -67,7 +67,6 @@ public class ConverterSuper {
         DoStmt.class,
         ReturnStmt.class,
         LabeledStmt.class,
-        CatchClause.class,
         TryStmt.class,
         ContinueStmt.class,
         ForEachStmt.class,

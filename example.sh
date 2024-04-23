@@ -1,4 +1,4 @@
 #!/bin/bash
 
-./nullgtn.sh /home/ubuntu/environment/nullgtn-artifact/ /home/ubuntu/environment/nullgtn-artifact/fmted_originals/uLeak/ /home/ubuntu/environment/nullgtn-artifact/out/uLeak/
-diff -r /home/ubuntu/environment/nullgtn-artifact/fmted_originals/uLeak/ /home/ubuntu/environment/nullgtn-artifact/out/uLeak/
+./nullgtn.sh /home/ubuntu/environment/tolerances/nullgtn-artifact/ /home/ubuntu/environment/tolerances/nullgtn-artifact/fmted_originals/ /home/ubuntu/environment/tolerances/nullgtn-artifact/out/
+diff -r /home/ubuntu/environment/tolerances/nullgtn-artifact/fmted_originals/ /home/ubuntu/environment/tolerances/nullgtn-artifact/out/
