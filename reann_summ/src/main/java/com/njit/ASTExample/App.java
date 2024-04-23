@@ -139,7 +139,7 @@ public class App {
 
                                 for(int i = 0; i < 2; i++) {
                                     ProcessBuilder processBuilder =
-                                            new ProcessBuilder("python", String.valueOf(i), modDir + "predkmm.py");
+                                            new ProcessBuilder("python", modDir + "predkmm.py", String.valueOf(i), rootDir.getAbsolutePath());
                                     Process process = processBuilder.start();
                                     BufferedReader reader =
                                             new BufferedReader(
@@ -162,7 +162,7 @@ public class App {
                                 for(int i = 0; i < 2; i++) {
                                     ProcessBuilder processBuilder =
                                             new ProcessBuilder(
-                                                    "python", modDir + "GTN_comb/predict.py", cluster[i], rootDir);
+                                                    "python", modDir + "GTN_comb/predict.py", cluster[i], rootDir.getAbsolutePath());
                                     Process process = processBuilder.start();
                                     BufferedReader reader =
                                             new BufferedReader(
