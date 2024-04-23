@@ -254,9 +254,10 @@ with torch.no_grad():
 #print(y_pred)
 
 for i, flake in enumerate(snowflakes):
-    if flake<len(json_data[0]['nodes']):
+    firstlen=len(json_data[0]['nodes'])
+    if flake<firstlen:
        node_types=json_data[0]['nodes'][flake]['type']
     else:
-       node_types=json_data[1]['nodes'][flake]['type']
+       node_types=json_data[1]['nodes'][flake-firstlen]['type']
     if ("MethodDeclaration" in node_types) or ("FieldDeclaration" in node_types):
         print(float(y_pred[i,1]-y_pred[i,0]))
