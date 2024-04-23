@@ -35,9 +35,9 @@ public class App {
     main() also tries to prune each AST based on several considerations.
     */
     public static void main(String[] args) {
-        modDir = args[1] + "reann_cond_pairs/";
-        rootDir = new File(args[2]);
-        saveDir = args[3];
+        modDir = args[0] + "reann_cond_pairs/";
+        rootDir = new File(args[1]);
+        saveDir = args[2];
 
         processJavaFiles(rootDir, "");
     }
