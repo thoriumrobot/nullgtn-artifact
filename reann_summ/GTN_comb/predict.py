@@ -239,7 +239,7 @@ test_target = torch.from_numpy(np.array(test_label)[:,1]).type(torch.cuda.LongTe
 num_classes = torch.max(test_target).item()+1
 is_ppi = False
 
-with open(directory+'nullgtn_'+sys.argv[1]+'.json.pkl', 'rb') as f:
+with open(directory+'nullgtn_data'+sys.argv[1]+'.json.pkl', 'rb') as f:
     model = pickle.load(f)
 
 #y_pred=[]

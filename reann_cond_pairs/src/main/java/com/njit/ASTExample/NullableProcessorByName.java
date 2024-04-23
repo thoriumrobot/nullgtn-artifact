@@ -1,19 +1,17 @@
 package com.njit.ASTExample;
 
 import com.github.javaparser.*;
-import com.github.javaparser.ast.*;
-import com.github.javaparser.ast.body.*;
-import com.github.javaparser.ast.expr.*;
-import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 import com.github.javaparser.JavaParser;
-import com.github.javaparser.ParseResult;
+import com.github.javaparser.ast.*;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
+import com.github.javaparser.ast.body.*;
 import com.github.javaparser.ast.comments.*;
+import com.github.javaparser.ast.expr.*;
 import com.github.javaparser.ast.nodeTypes.*;
 import com.github.javaparser.ast.stmt.*;
 import com.github.javaparser.ast.type.*;
-
+import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
@@ -27,8 +25,8 @@ public class NullableProcessorByName {
         // Iterate over all .java files in the project
         try (Stream<Path> paths = Files.walk(Paths.get(projectPath))) {
             paths.filter(Files::isRegularFile)
-                 .filter(p -> p.toString().endsWith(".java"))
-                 .forEach(NullableProcessorByName::processFile);
+                    .filter(p -> p.toString().endsWith(".java"))
+                    .forEach(NullableProcessorByName::processFile);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -42,81 +40,79 @@ public class NullableProcessorByName {
             if (cu != null) {
                 cu.accept(new MethodVisitor(), null);
 
-                        // sanity check conditions
+                // sanity check conditions
 
-                        // assigned to null
-                        annotateFieldsAssignedToNull(cu);
+                // assigned to null
+                annotateFieldsAssignedToNull(cu);
 
-                        // synchronize Methods with Fields
-                        syncMethodField(cu);
+                // synchronize Methods with Fields
+                syncMethodField(cu);
 
-                        // assignment to Null
-                        NullableAnnotator.annotateParameters(cu);
+                // assignment to Null
+                NullableAnnotator.annotateParameters(cu);
 
-                        // comparisons with null for Fields
-                        markNullable(cu);
+                // comparisons with null for Fields
+                markNullable(cu);
 
-                        // comparisons with null for Parameters
-                        markNullableParameters(cu);
+                // comparisons with null for Parameters
+                markNullableParameters(cu);
 
-                        // synchronize Parameters with Fields
-                        annotateParametersAsNullable(cu);
-                        
-                        //returns null
-                        addNullableAnnotation(cu);
+                // synchronize Parameters with Fields
+                annotateParametersAsNullable(cu);
 
-                        // remove extras
-                        ExtraCleaner.removeExtraNullableAnnotations(cu);
+                // returns null
+                addNullableAnnotation(cu);
 
-                        // remove object creation
-                        removeNullableFromNewConstructors(cu);
+                // remove extras
+                ExtraCleaner.removeExtraNullableAnnotations(cu);
 
-                        // remove annotations from stream Parameters
-                        CleanStreams.removeNullableFromStreamParameters(cu);
+                // remove object creation
+                removeNullableFromNewConstructors(cu);
 
-                        // remove annotations from dereferenced Parameters
-                        CleanDereferenced.removeNullableOnDereferencedParams(cu);
-                                        
-                                // remove annotations from constant methods
-                                removeNullableFromConstantMethods(cu);
-                                
-                                File file=javaFile.toFile();
+                // remove annotations from stream Parameters
+                CleanStreams.removeNullableFromStreamParameters(cu);
 
-                                String importline = null;
+                // remove annotations from dereferenced Parameters
+                CleanDereferenced.removeNullableOnDereferencedParams(cu);
 
-                                if (file.toString().contains("keyvaluestore"))
-                                    importline = "io.reactivex.annotations.Nullable";
-                                else if (file.toString().contains("meal-planner"))
-                                    importline = "javax.annotation.Nullable";
-                                else if (file.toString().contains("QRContact"))
-                                    importline = "android.support.annotation.Nullable";
-                                else if (file.toString().contains("caffeine"))
-                                    importline =
-                                            "org.checkerframework.checker.nullness.qual.Nullable";
-                                else if (file.toString().contains("ColdSnap"))
-                                    importline = "javax.annotation.Nullable";
-                                else if (file.toString().contains("AutoDispose"))
-                                    importline = "io.reactivex.annotations.Nullable";
-                                else if (file.toString().contains("okbuck"))
-                                    importline = "javax.annotation.Nullable";
-                                else if (file.toString().contains("picasso"))
-                                    importline = "androidx.annotation.Nullable";
-                                else if (file.toString().contains("ReactiveNetwork"))
-                                    importline = "javax.annotation.Nullable";
-                                else if (file.toString().contains("skaffold-tools-for-java"))
-                                    importline = "javax.annotation.Nullable";
-                                else if (file.toString().contains("butterknife"))
-                                    importline = "android.support.annotation.Nullable";
-                                else if (file.toString().contains("uLeak"))
-                                    importline = "android.support.annotation.Nullable";
-                                else if (file.toString().contains("RIBs"))
-                                    importline = "org.jetbrains.annotations.Nullable";
-                                else if (file.toString().contains("jib"))
-                                    importline = "javax.annotation.Nullable";
+                // remove annotations from constant methods
+                removeNullableFromConstantMethods(cu);
 
-                                if (importline != null) {
-                                    cu.addImport(importline);
-                                }
+                File file = javaFile.toFile();
+
+                String importline = null;
+
+                if (file.toString().contains("keyvaluestore"))
+                    importline = "io.reactivex.annotations.Nullable";
+                else if (file.toString().contains("meal-planner"))
+                    importline = "javax.annotation.Nullable";
+                else if (file.toString().contains("QRContact"))
+                    importline = "android.support.annotation.Nullable";
+                else if (file.toString().contains("caffeine"))
+                    importline = "org.checkerframework.checker.nullness.qual.Nullable";
+                else if (file.toString().contains("ColdSnap"))
+                    importline = "javax.annotation.Nullable";
+                else if (file.toString().contains("AutoDispose"))
+                    importline = "io.reactivex.annotations.Nullable";
+                else if (file.toString().contains("okbuck"))
+                    importline = "javax.annotation.Nullable";
+                else if (file.toString().contains("picasso"))
+                    importline = "androidx.annotation.Nullable";
+                else if (file.toString().contains("ReactiveNetwork"))
+                    importline = "javax.annotation.Nullable";
+                else if (file.toString().contains("skaffold-tools-for-java"))
+                    importline = "javax.annotation.Nullable";
+                else if (file.toString().contains("butterknife"))
+                    importline = "android.support.annotation.Nullable";
+                else if (file.toString().contains("uLeak"))
+                    importline = "android.support.annotation.Nullable";
+                else if (file.toString().contains("RIBs"))
+                    importline = "org.jetbrains.annotations.Nullable";
+                else if (file.toString().contains("jib")) importline = "javax.annotation.Nullable";
+
+                if (importline != null) {
+                    cu.addImport(importline);
+                }
 
                 // Write modifications back to the file
                 Files.write(javaFile, cu.toString().getBytes());
@@ -281,80 +277,108 @@ public class NullableProcessorByName {
     }
 
     public static void addNullableAnnotation(CompilationUnit cu) {
-        cu.accept(new VoidVisitorAdapter<Void>() {
-            @Override
-            public void visit(MethodDeclaration md, Void arg) {
-                super.visit(md, arg);
-                
-                // Check if method already has @Nullable annotation
-                if (md.getAnnotationByName("Nullable").isPresent()) {
-                    return;
-                }
-                
-                // Check if any return statement returns null or has a ternary with null
-                boolean shouldAnnotate = md.getBody().isPresent() && md.getBody().get().getStatements().stream()
-                    .filter(stmt -> stmt instanceof ReturnStmt)
-                    .map(stmt -> ((ReturnStmt) stmt).getExpression().orElse(null))
-                    .anyMatch(expr -> expr instanceof NullLiteralExpr || 
-                            (expr instanceof ConditionalExpr && 
-                             (((ConditionalExpr) expr).getThenExpr() instanceof NullLiteralExpr || 
-                              ((ConditionalExpr) expr).getElseExpr() instanceof NullLiteralExpr)));
-                
-                if (shouldAnnotate) {
-                    md.addAnnotation("Nullable");
-                }
-            }
-        }, null);
+        cu.accept(
+                new VoidVisitorAdapter<Void>() {
+                    @Override
+                    public void visit(MethodDeclaration md, Void arg) {
+                        super.visit(md, arg);
+
+                        // Check if method already has @Nullable annotation
+                        if (md.getAnnotationByName("Nullable").isPresent()) {
+                            return;
+                        }
+
+                        // Check if any return statement returns null or has a ternary with null
+                        boolean shouldAnnotate =
+                                md.getBody().isPresent()
+                                        && md.getBody().get().getStatements().stream()
+                                                .filter(stmt -> stmt instanceof ReturnStmt)
+                                                .map(
+                                                        stmt ->
+                                                                ((ReturnStmt) stmt)
+                                                                        .getExpression()
+                                                                        .orElse(null))
+                                                .anyMatch(
+                                                        expr ->
+                                                                expr instanceof NullLiteralExpr
+                                                                        || (expr
+                                                                                        instanceof
+                                                                                        ConditionalExpr
+                                                                                && (((ConditionalExpr)
+                                                                                                                expr)
+                                                                                                        .getThenExpr()
+                                                                                                instanceof
+                                                                                                NullLiteralExpr
+                                                                                        || ((ConditionalExpr)
+                                                                                                                expr)
+                                                                                                        .getElseExpr()
+                                                                                                instanceof
+                                                                                                NullLiteralExpr)));
+
+                        if (shouldAnnotate) {
+                            md.addAnnotation("Nullable");
+                        }
+                    }
+                },
+                null);
     }
 
     private static class MethodVisitor extends VoidVisitorAdapter<Void> {
 
-    @Override
-    public void visit(MethodDeclaration n, Void arg) {
-        processParameters(n);
-        super.visit(n, arg);
-    }
-
-    @Override
-    public void visit(ConstructorDeclaration n, Void arg) {
-        processParameters(n);
-        super.visit(n, arg);
-    }
-
-    private void processParameters(CallableDeclaration<?> n) {
-    for (Parameter parameter : n.getParameters()) {
-        // Check if the parameter has both @Nullable and @NonNull annotations
-        boolean hasNullable = parameter.getAnnotationByName("Nullable").isPresent();
-        boolean hasNonNull = parameter.getAnnotationByName("NonNull").isPresent();
-
-        if (hasNullable && hasNonNull) {
-            parameter.getAnnotationByName("Nullable").get().remove();
+        @Override
+        public void visit(MethodDeclaration n, Void arg) {
+            processParameters(n);
+            super.visit(n, arg);
         }
 
-        // Existing code for checking assignments (you can keep this if needed)
-        List<AssignExpr> assignments = parameter.findAll(AssignExpr.class, assign -> 
-            assign.getTarget().toString().equals(parameter.getNameAsString()));
+        @Override
+        public void visit(ConstructorDeclaration n, Void arg) {
+            processParameters(n);
+            super.visit(n, arg);
+        }
 
-        for (AssignExpr assignment : assignments) {
-            VariableDeclarator var = assignment.findAncestor(VariableDeclarator.class).orElse(null);
-            if (var != null && var.getNameAsString().equals(parameter.getNameAsString())) {
-                Node parentNode = var.getParentNode().orElse(null);
-                List<AnnotationExpr> annotations = null;
-                if (parentNode instanceof FieldDeclaration) {
-                    annotations = ((FieldDeclaration) parentNode).getAnnotations();
-                } else if (parentNode instanceof VariableDeclarationExpr) {
-                    annotations = ((VariableDeclarationExpr) parentNode).getAnnotations();
+        private void processParameters(CallableDeclaration<?> n) {
+            for (Parameter parameter : n.getParameters()) {
+                // Check if the parameter has both @Nullable and @NonNull annotations
+                boolean hasNullable = parameter.getAnnotationByName("Nullable").isPresent();
+                boolean hasNonNull = parameter.getAnnotationByName("NonNull").isPresent();
+
+                if (hasNullable && hasNonNull) {
+                    parameter.getAnnotationByName("Nullable").get().remove();
                 }
-                if (annotations != null && annotations.stream().anyMatch(ann -> ann.getNameAsString().equals("Nullable"))) {
-                    parameter.addAnnotation("Nullable");
-                    break;
+
+                // Existing code for checking assignments (you can keep this if needed)
+                List<AssignExpr> assignments =
+                        parameter.findAll(
+                                AssignExpr.class,
+                                assign ->
+                                        assign.getTarget()
+                                                .toString()
+                                                .equals(parameter.getNameAsString()));
+
+                for (AssignExpr assignment : assignments) {
+                    VariableDeclarator var =
+                            assignment.findAncestor(VariableDeclarator.class).orElse(null);
+                    if (var != null && var.getNameAsString().equals(parameter.getNameAsString())) {
+                        Node parentNode = var.getParentNode().orElse(null);
+                        List<AnnotationExpr> annotations = null;
+                        if (parentNode instanceof FieldDeclaration) {
+                            annotations = ((FieldDeclaration) parentNode).getAnnotations();
+                        } else if (parentNode instanceof VariableDeclarationExpr) {
+                            annotations = ((VariableDeclarationExpr) parentNode).getAnnotations();
+                        }
+                        if (annotations != null
+                                && annotations.stream()
+                                        .anyMatch(
+                                                ann -> ann.getNameAsString().equals("Nullable"))) {
+                            parameter.addAnnotation("Nullable");
+                            break;
+                        }
+                    }
                 }
             }
         }
     }
-}
-
-}
 
     public static void removeNullableFromNewConstructors(CompilationUnit cu) {
         for (MethodDeclaration method : cu.findAll(MethodDeclaration.class)) {
@@ -386,13 +410,26 @@ public class NullableProcessorByName {
                 boolean hasNullableAnnotation = md.getAnnotationByName("Nullable").isPresent();
 
                 // Check if method returns a constant expression
-                boolean returnsConstant = md.getBody().isPresent() &&
-                                          md.getBody().get().getStatements().size() == 1 &&
-                                          md.getBody().get().getStatement(0).isReturnStmt() &&
-                                          md.getBody().get().getStatement(0).asReturnStmt().getExpression().isPresent() &&
-                                          md.getBody().get().getStatement(0).asReturnStmt().getExpression().get() instanceof LiteralExpr;
+                boolean returnsConstant =
+                        md.getBody().isPresent()
+                                && md.getBody().get().getStatements().size() == 1
+                                && md.getBody().get().getStatement(0).isReturnStmt()
+                                && md.getBody()
+                                        .get()
+                                        .getStatement(0)
+                                        .asReturnStmt()
+                                        .getExpression()
+                                        .isPresent()
+                                && md.getBody()
+                                                .get()
+                                                .getStatement(0)
+                                                .asReturnStmt()
+                                                .getExpression()
+                                                .get()
+                                        instanceof LiteralExpr;
 
-                // If method has @Nullable annotation and returns a constant expression, mark the annotation for removal
+                // If method has @Nullable annotation and returns a constant expression, mark the
+                // annotation for removal
                 if (hasNullableAnnotation && returnsConstant) {
                     md.getAnnotationByName("Nullable").ifPresent(annotationsToRemove::add);
                 }
@@ -402,5 +439,4 @@ public class NullableProcessorByName {
         // Remove all the marked annotations
         annotationsToRemove.forEach(AnnotationExpr::remove);
     }
-
 }

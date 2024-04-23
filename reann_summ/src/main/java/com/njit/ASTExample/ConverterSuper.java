@@ -800,6 +800,6 @@ public class ConverterSuper {
 
     public static boolean instanceInCHOSEN(Node node) {
         return instanceInArray(CHOSEN_BY_ABLATION, node);
-        //return !(node instanceof CatchClause);
+        // return !(node instanceof CatchClause);
     }
 }
