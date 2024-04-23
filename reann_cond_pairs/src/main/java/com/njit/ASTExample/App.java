@@ -234,6 +234,9 @@ public class App {
                                 }
                             }
                         }
+
+                        File delete_file = new File(modDir + "temp_output.json");
+                        delete_file.delete();
                     }
 
                     // reannotate all the files
