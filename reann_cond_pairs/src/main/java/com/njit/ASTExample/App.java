@@ -143,7 +143,7 @@ public class App {
                                                     "python",
                                                     modDir + "predkmm.py",
                                                     String.valueOf(i),
-                                                    rootDir.getAbsolutePath());
+                                                    modDir);
                                     Process process = processBuilder.start();
                                     BufferedReader reader =
                                             new BufferedReader(
@@ -173,7 +173,7 @@ public class App {
                                                     "python",
                                                     modDir + "GTN_comb/predict.py",
                                                     cluster[i],
-                                                    rootDir.getAbsolutePath());
+                                                    modDir);
                                     Process process = processBuilder.start();
                                     BufferedReader reader =
                                             new BufferedReader(
