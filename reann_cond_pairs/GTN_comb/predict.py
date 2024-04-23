@@ -253,8 +253,9 @@ with torch.no_grad():
 
 #print(y_pred)
 
+firstlen=len(json_data[0]['nodes'])
+
 for i, flake in enumerate(snowflakes):
-    firstlen=len(json_data[0]['nodes'])
     if flake<firstlen:
        node_types=json_data[0]['nodes'][flake]['type']
     else:
