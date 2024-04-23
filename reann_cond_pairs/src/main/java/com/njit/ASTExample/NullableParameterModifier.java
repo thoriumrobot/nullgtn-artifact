@@ -17,6 +17,8 @@ public class NullableParameterModifier {
     private static Set<String> methodsToAnnotate = new HashSet<>();
 
     public static void processProject(File projectDir) {
+        if(!projectDir.exists())
+            return;
         for (File file : projectDir.listFiles()) {
             if (file.isDirectory()) {
                 processProject(file);

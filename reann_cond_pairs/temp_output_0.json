@@ -1,0 +1,119 @@
+{
+    "nodes": [
+        {
+            "nullable": 0,
+            "id": 0,
+            "type": ["CompilationUnit"]
+        },
+        {
+            "nullable": 0,
+            "id": 1,
+            "type": ["PackageDeclaration"]
+        },
+        {
+            "nullable": 0,
+            "id": 2,
+            "type": ["Name"]
+        },
+        {
+            "nullable": 0,
+            "id": 3,
+            "type": ["Name"]
+        },
+        {
+            "nullable": 0,
+            "id": 4,
+            "type": ["Name"]
+        },
+        {
+            "nullable": 0,
+            "id": 5,
+            "type": ["ClassOrInterfaceDeclaration"]
+        },
+        {
+            "nullable": 0,
+            "id": 6,
+            "type": ["SimpleName"]
+        },
+        {
+            "nullable": 0,
+            "id": 7,
+            "type": [
+                "MethodDeclaration",
+                "void",
+                "Other"
+            ]
+        },
+        {
+            "nullable": 0,
+            "id": 8,
+            "type": ["SimpleName"]
+        },
+        {
+            "nullable": 0,
+            "id": 9,
+            "type": ["VoidType"]
+        },
+        {
+            "nullable": 0,
+            "id": 10,
+            "type": ["BlockStmt"]
+        },
+        {
+            "nullable": 0,
+            "id": 11,
+            "type": ["ExpressionStmt"]
+        },
+        {
+            "nullable": 0,
+            "id": 12,
+            "type": ["MethodCallExpr"]
+        },
+        {
+            "nullable": 0,
+            "id": 13,
+            "type": ["NameExpr"]
+        },
+        {
+            "nullable": 0,
+            "id": 14,
+            "type": ["SimpleName"]
+        },
+        {
+            "nullable": 0,
+            "id": 15,
+            "type": ["SimpleName"]
+        }
+    ],
+    "nameList": {
+        "GcCallWrapper": [6],
+        "callGC": [8],
+        "gc": [15],
+        "System": [14]
+    },
+    "adjacencyList": {
+        "0": [
+            1,
+            2,
+            5
+        ],
+        "11": [12],
+        "1": [3],
+        "12": [
+            13,
+            15
+        ],
+        "2": [4],
+        "13": [14],
+        "5": [
+            6,
+            7
+        ],
+        "7": [
+            8,
+            9,
+            10
+        ],
+        "10": [11]
+    }
+}
