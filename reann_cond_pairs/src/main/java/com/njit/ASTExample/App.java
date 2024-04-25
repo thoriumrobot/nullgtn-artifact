@@ -180,6 +180,7 @@ public class App {
                                                     new InputStreamReader(
                                                             process.getInputStream()));
                                     int exitCode = process.waitFor();
+                                    String line = "";
 
                                     System.out.println(exitCode);
 
@@ -193,7 +194,6 @@ public class App {
                                                 pair[i].getAbsolutePath(), new HashMap<>());
 
                                         // Add score to the node's inner HashMap
-                                        String line = "";
                                         int lineCount = 0;
 
                                         while ((line = reader.readLine()) != null) {
@@ -234,6 +234,12 @@ public class App {
 
                                             lineCount++;
                                         }
+                                    }
+                                    else {
+                                        while ((line = reader.readLine()) != null) {
+                                            System.out.println(line);
+                                        }
+                                        System.exit(0);
                                     }
                                 }
                             }
