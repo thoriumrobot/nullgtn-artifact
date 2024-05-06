@@ -157,12 +157,10 @@ public class App {
                                     int exitCode = process.waitFor();
 
                                     if (exitCode == 0) {
-                                        cluster[i] =
-                                                "data"
-                                                        + String.valueOf(
+                                        cluster[i] = String.valueOf(
                                                                 output.toString().charAt(0));
                                     } else {
-                                        cluster[i] = "data1";
+                                        cluster[i] = "1";
                                     }
                                 }
 
