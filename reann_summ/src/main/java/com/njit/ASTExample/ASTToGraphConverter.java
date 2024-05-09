@@ -72,8 +72,8 @@ public class ASTToGraphConverter extends ConverterSuper {
         ArrayList<String> nodeType = new ArrayList<>();
         nodeType.add(node.getClass().getSimpleName());
 
-        // CatchClauses are out
-        if (node instanceof CatchClause) {
+        // Summarize
+        if (!instanceInNODE(node) && !instanceInCHOSEN(node)) {
             return;
         }
 
