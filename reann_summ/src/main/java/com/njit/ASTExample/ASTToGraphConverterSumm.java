@@ -11,6 +11,7 @@ import com.github.javaparser.ast.type.*;
 import java.util.*;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import java.lang.reflect.Field;
 
 public class ASTToGraphConverterSumm extends ConverterSuper {
 

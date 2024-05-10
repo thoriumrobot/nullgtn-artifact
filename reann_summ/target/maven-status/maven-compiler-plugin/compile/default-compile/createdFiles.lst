@@ -12,6 +12,7 @@ com/njit/ASTExample/BaseNames.class
 com/njit/ASTExample/NullableAnnotator$AssignToNullVisitor.class
 com/njit/ASTExample/CleanDereferenced$1.class
 com/njit/ASTExample/NullableParameterModifier.class
+com/njit/ASTExample/ASTToGraphConverterSumm.class
 com/njit/ASTExample/NullableProcessorByName.class
 com/njit/ASTExample/ConverterSuper.class
 com/njit/ASTExample/ExpandNames.class

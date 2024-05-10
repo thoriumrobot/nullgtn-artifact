@@ -9,6 +9,7 @@ import com.github.javaparser.ast.stmt.*;
 import com.github.javaparser.ast.type.*;
 import java.util.*;
 import java.util.HashSet;
+import java.lang.reflect.Field;
 
 public class ReannotateClass extends ConverterSuper {
     Node storedRoot;
