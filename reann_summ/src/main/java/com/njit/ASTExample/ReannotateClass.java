@@ -7,7 +7,6 @@ import com.github.javaparser.ast.expr.*;
 import com.github.javaparser.ast.nodeTypes.*;
 import com.github.javaparser.ast.stmt.*;
 import com.github.javaparser.ast.type.*;
-import java.lang.reflect.Field;
 import java.util.*;
 import java.util.HashSet;
 

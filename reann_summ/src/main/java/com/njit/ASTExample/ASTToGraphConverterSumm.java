@@ -1,16 +1,18 @@
 package com.njit.ASTExample;
 
 import com.github.javaparser.ast.*;
+import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.body.*;
 import com.github.javaparser.ast.comments.*;
 import com.github.javaparser.ast.expr.*;
+import com.github.javaparser.ast.expr.Name;
 import com.github.javaparser.ast.stmt.*;
 import com.github.javaparser.ast.type.*;
 import java.util.*;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-public class ASTToGraphConverter extends ConverterSuper {
+public class ASTToGraphConverterSumm extends ConverterSuper {
 
     public Node storedRoot;
     public List<GraphNode> nodes;
@@ -20,7 +22,7 @@ public class ASTToGraphConverter extends ConverterSuper {
     public int rlvCount;
     public ArrayList<Node> rlvNodes;
 
-    public ASTToGraphConverter(Map<String, Set<Integer>> nameList) {
+    public ASTToGraphConverterSumm(Map<String, Set<Integer>> nameList) {
         this.nodes = new ArrayList<>();
         this.adjacencyList = new HashMap<>();
         this.nameList = new HashMap<>();
@@ -69,8 +71,8 @@ public class ASTToGraphConverter extends ConverterSuper {
         ArrayList<String> nodeType = new ArrayList<>();
         nodeType.add(node.getClass().getSimpleName());
 
-        // Do not summarize
-        if (node instanceof CatchClause) {
+        // Summarize
+        if (!instanceInNODE(node) && !instanceInCHOSEN(node)) {
             return;
         }
 

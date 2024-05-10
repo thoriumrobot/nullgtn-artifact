@@ -50,7 +50,7 @@ public class App {
             for (File file : files) {
                 if (file.isDirectory() && file.toString().contains("/src/main")) {
                     HashMap<String, Integer> fileCount = new HashMap<>();
-                    HashMap<String, ASTToGraphConverter> converters = new HashMap<>();
+                    HashMap<String, ASTToGraphConverterSumm> converters = new HashMap<>();
                     HashMap<String, HashMap<Integer, Double>> scores = new HashMap<>();
 
                     List<File[]> javaFilePairs = getJavaFilePairs(file.toString());
@@ -110,7 +110,7 @@ public class App {
                                     }
                                     converters.put(
                                             pair[i].getAbsolutePath(),
-                                            new ASTToGraphConverter(grownames[i].nameList));
+                                            new ASTToGraphConverterSumm(grownames[i].nameList));
                                     converters
                                             .get(pair[i].getAbsolutePath())
                                             .convert(compilationUnits[i]);
@@ -240,7 +240,8 @@ public class App {
                     // reannotate all the files
                     for (Map.Entry<String, Integer> entry : fileCount.entrySet()) {
                         File newFile = new File(entry.getKey());
-                        ASTToGraphConverter fileConverter = converters.get(entry.getKey());
+                        ASTToGraphConverter fileConverter = new ASTToGraphConverter(converters.get(entry.getKey()).nameList); //converters.get(entry.getKey());
+                        fileConverter.convert(parseJavaFile(newFile));
                         CompilationUnit fileRoot = (CompilationUnit) fileConverter.storedRoot;
 
                         HashMap<Integer, Double> fileScores = scores.get(entry.getKey());
