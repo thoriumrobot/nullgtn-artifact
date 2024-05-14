@@ -5,7 +5,7 @@ A tool that automatically reannotates Java projects using graph learning models.
 
 Prerequisites:
 
-conda create --name nullgtn python=3.8 openjdk=11.0 maven -c anaconda -c conda-forge
+conda create --name nullgtn python=3.8 openjdk=11.0 mkl==2022.1.0 mkl-devel==2022.1.0 mkl-include==2022.1.0 maven -c anaconda -c conda-forge
 conda activate nullgtn
 git clone https://github.com/thoriumrobot/nullgtn-artifact
 cd nullgtn-artifact
