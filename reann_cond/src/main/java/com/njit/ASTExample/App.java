@@ -27,6 +27,9 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class App {
+    static String modDir = "/usr/src/app/nullgtn-artifact/reann_cond_pairs/";
+    static File rootDir = new File("/usr/src/app/nullgtn-artifact/minstripped/");
+    static String saveDir = "/usr/src/app/nullgtn-artifact/50_20/";
 
     /*
     Loop over the input classes, parse AST, convert to graph and save to file.
@@ -41,7 +44,6 @@ public class App {
     }
 
     public static void processJavaFiles(File rootDir, String subdir) {
-        String modDir = "/home/k/ks225/nullproj/excprm/reann_cond/";
         try {
 
             File[] files = rootDir.listFiles();
@@ -123,8 +125,7 @@ public class App {
 
                                 // save the file
                                 String newFile = rc.toString();
-                                String dirpath =
-                                        "/home/k/ks225/nullproj/excprm/50_20" + subdir + "/";
+                                String dirpath = saveDir.endsWith("/") ? saveDir + subdir : saveDir + "/" + subdir;
                                 File directory = new File(dirpath);
                                 if (!directory.exists()) {
                                     directory.mkdirs();

@@ -21,6 +21,7 @@ import torch.nn as nn
 from model_gtn import GTN
 from model_fastgtn import FastGTNs
 import pickle
+from json_tricks import loads
 import argparse
 from torch_geometric.utils import add_self_loops
 from sklearn.metrics import f1_score as sk_f1_score
@@ -35,7 +36,25 @@ batch_size=6
 
 standard_sizexbatch_size=8000
 
-directory = '/home/k/ks225/nullproj/excprm/reann_cond/'
+def getobj(file):
+   while True:
+    s=file.read(1)
+    if not s:
+        return s
+    if s=='{':
+       break
+   depth=1
+   while depth>0:
+      char=file.read(1)
+      if char=='{':
+         depth+=1
+      if char=='}':
+         depth-=1
+      s+=char
+   return s
+
+#directory = '/usr/src/app/nullgtn-artifact/reann_cond_pairs/'
+directory = sys.argv[2]
 
 primitive_types=["void", "byte", "short", "int", "long", "float", "double", "char", "boolean", "voidModifier", "byteModifier", "shortModifier", "intModifier", "longModifier", "floatModifier", "doubleModifier", "charModifier", "booleanModifier", "NonNullMarker", "final Modifier", "ArrayType", "ClassOrInterfaceType", "VariableDeclarationExpr"]
 nodeList=["MethodDeclaration", "FieldDeclaration"]
@@ -49,11 +68,12 @@ json_data = []
 
 # Load JSON data from file
 with open(fname, "r") as file:
-  json_data = json.load(file)
-
-json_data=[json_data]
-
-type(json_data)
+  while True:
+      obj_str = getobj(file)
+      if not obj_str:
+        break
+      obj_str = loads(obj_str)
+      json_data.append(obj_str)
 
 #types=set()
 
@@ -122,15 +142,22 @@ A_t=np.zeros((standard_sizexbatch_size, standard_sizexbatch_size))
 tsum=0
 csum=0
 
-for graph_json in json_data:
-  nodes=len(graph_json['nodes'])
+comb_nlist=dict()
+
+for i, graph_json in enumerate(json_data):
   nlist=graph_json['nameList']
-  tnode=0
   for tkey in nlist:
-    for node in nlist[tkey]:
+     if tkey not in comb_nlist:
+        comb_nlist[tkey]=[]
+     comb_nlist[tkey].extend([x + i*len(json_data[0]['nodes']) for x in nlist[tkey]])
+
+for graph_json in json_data:
+  tnode=0
+  for tkey in comb_nlist:
+    for node in comb_nlist[tkey]:
       A_t[csum+node,nnode+tsum+tnode]=1
     tnode+=1
-  csum+=nodes
+  csum+=len(graph_json['nodes'])
   tsum+=tnode
 
 A_t=csr_matrix(A_t)
@@ -138,7 +165,7 @@ A_t=csr_matrix(A_t)
 import pickle
 
 edges=[A_n,A_n.transpose(),A_t,A_t.transpose()]
-#with open('/home/k/ks225/nullproj/reann_large/GTN_comb/data/edges.pkl', 'wb') as f:
+#with open('/home/k/ks225/nullproj/reann/GTN_comb/data/edges.pkl', 'wb') as f:
 #  pickle.dump(edges, f)
 
 """# Node Features"""
@@ -175,7 +202,7 @@ for node_i in range(gnode,standard_sizexbatch_size):
 
 node_features=type_feat
 #node_feature=np.concatenate((null_feat,type_feat), axis=1)
-#with open('/home/k/ks225/nullproj/reann_large/GTN_comb/data/node_features.pkl', 'wb') as f:
+#with open('/home/k/ks225/nullproj/reann/GTN_comb/data/node_features.pkl', 'wb') as f:
 #  pickle.dump(type_feat, f)
 
 """# Prepare arrays"""
@@ -212,7 +239,7 @@ test_target = torch.from_numpy(np.array(test_label)[:,1]).type(torch.cuda.LongTe
 num_classes = torch.max(test_target).item()+1
 is_ppi = False
 
-with open(directory+'nullgtn_'+sys.argv[1]+'.json.pkl', 'rb') as f:
+with open(directory+'nullgtn_data'+sys.argv[1]+'.json.pkl', 'rb') as f:
     model = pickle.load(f)
 
 #y_pred=[]
@@ -221,12 +248,17 @@ model = model.eval()
 
 with torch.no_grad():
     #model.eval()
-    loss, y_pred, _ = model.forward(A, node_features, test_node, test_target)
+    y_pred = model.forward(A, node_features, test_node, test_target, eval=True)
     # Additional processing based on the prediction task
 
 #print(y_pred)
 
+firstlen=len(json_data[0]['nodes'])
+
 for i, flake in enumerate(snowflakes):
-    node_types=json_data[0]['nodes'][flake]['type']
-    if ("MethodDeclaration" in node_types and (y_pred[i,1]-y_pred[i,0])>0.7341) or ("FieldDeclaration" in node_types and (y_pred[i,1]-y_pred[i,0])>0.8449):
+    if flake<firstlen:
+       node_types=json_data[0]['nodes'][flake]['type']
+    else:
+       node_types=json_data[1]['nodes'][flake-firstlen]['type']
+    if ("MethodDeclaration" in node_types and (y_pred[i,1]-y_pred[i,0])>0.9568) or ("FieldDeclaration" in node_types and (y_pred[i,1]-y_pred[i,0])>1.1675):
         print(i)
