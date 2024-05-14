@@ -103,7 +103,8 @@ public class App {
                             // predict the nodes
                             processBuilder =
                                     new ProcessBuilder(
-                                            "python", modDir + "GTN_comb/predict.py", cluster);
+                                            "python", modDir + "GTN_comb/predict.py", cluster,
+                                                    modDir);
                             process = processBuilder.start();
                             reader =
                                     new BufferedReader(
