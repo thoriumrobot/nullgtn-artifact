@@ -28,307 +28,92 @@
         {
             "nullable": 0,
             "id": 5,
-            "type": ["ImportDeclaration"]
-        },
-        {
-            "nullable": 0,
-            "id": 6,
-            "type": ["Name"]
-        },
-        {
-            "nullable": 0,
-            "id": 7,
-            "type": ["Name"]
-        },
-        {
-            "nullable": 0,
-            "id": 8,
-            "type": ["Name"]
-        },
-        {
-            "nullable": 0,
-            "id": 9,
-            "type": ["Name"]
-        },
-        {
-            "nullable": 0,
-            "id": 10,
             "type": ["ClassOrInterfaceDeclaration"]
         },
         {
             "nullable": 0,
-            "id": 11,
+            "id": 6,
             "type": ["SimpleName"]
+        },
+        {
+            "nullable": 0,
+            "id": 7,
+            "type": [
+                "MethodDeclaration",
+                "void",
+                "Other"
+            ]
+        },
+        {
+            "nullable": 0,
+            "id": 8,
+            "type": ["SimpleName"]
+        },
+        {
+            "nullable": 0,
+            "id": 9,
+            "type": ["VoidType"]
+        },
+        {
+            "nullable": 0,
+            "id": 10,
+            "type": ["BlockStmt"]
+        },
+        {
+            "nullable": 0,
+            "id": 11,
+            "type": ["ExpressionStmt"]
         },
         {
             "nullable": 0,
             "id": 12,
-            "type": [
-                "MethodDeclaration",
-                "void",
-                "Other"
-            ]
+            "type": ["MethodCallExpr"]
         },
         {
             "nullable": 0,
             "id": 13,
-            "type": ["SimpleName"]
+            "type": ["NameExpr"]
         },
         {
             "nullable": 0,
             "id": 14,
-            "type": ["Parameter"]
+            "type": ["SimpleName"]
         },
         {
             "nullable": 0,
             "id": 15,
-            "type": ["ClassOrInterfaceType"]
-        },
-        {
-            "nullable": 0,
-            "id": 16,
             "type": ["SimpleName"]
-        },
-        {
-            "nullable": 0,
-            "id": 17,
-            "type": ["ClassOrInterfaceType"]
-        },
-        {
-            "nullable": 0,
-            "id": 18,
-            "type": ["ClassOrInterfaceType"]
-        },
-        {
-            "nullable": 0,
-            "id": 19,
-            "type": ["SimpleName"]
-        },
-        {
-            "nullable": 0,
-            "id": 20,
-            "type": ["SimpleName"]
-        },
-        {
-            "nullable": 0,
-            "id": 21,
-            "type": ["SimpleName"]
-        },
-        {
-            "nullable": 0,
-            "id": 22,
-            "type": ["VoidType"]
-        },
-        {
-            "nullable": 0,
-            "id": 23,
-            "type": [
-                "MethodDeclaration",
-                "void",
-                "Other"
-            ]
-        },
-        {
-            "nullable": 0,
-            "id": 24,
-            "type": ["SimpleName"]
-        },
-        {
-            "nullable": 0,
-            "id": 25,
-            "type": ["Parameter"]
-        },
-        {
-            "nullable": 0,
-            "id": 26,
-            "type": ["ClassOrInterfaceType"]
-        },
-        {
-            "nullable": 0,
-            "id": 27,
-            "type": ["SimpleName"]
-        },
-        {
-            "nullable": 0,
-            "id": 28,
-            "type": ["SimpleName"]
-        },
-        {
-            "nullable": 0,
-            "id": 29,
-            "type": ["Parameter"]
-        },
-        {
-            "nullable": 0,
-            "id": 30,
-            "type": ["ClassOrInterfaceType"]
-        },
-        {
-            "nullable": 0,
-            "id": 31,
-            "type": ["SimpleName"]
-        },
-        {
-            "nullable": 0,
-            "id": 32,
-            "type": ["SimpleName"]
-        },
-        {
-            "nullable": 0,
-            "id": 33,
-            "type": [
-                "Parameter",
-                "longModifier"
-            ]
-        },
-        {
-            "nullable": 0,
-            "id": 34,
-            "type": ["Modifier"]
-        },
-        {
-            "nullable": 0,
-            "id": 35,
-            "type": ["PrimitiveType"]
-        },
-        {
-            "nullable": 0,
-            "id": 36,
-            "type": ["SimpleName"]
-        },
-        {
-            "nullable": 0,
-            "id": 37,
-            "type": ["Parameter"]
-        },
-        {
-            "nullable": 0,
-            "id": 38,
-            "type": ["Modifier"]
-        },
-        {
-            "nullable": 0,
-            "id": 39,
-            "type": ["ClassOrInterfaceType"]
-        },
-        {
-            "nullable": 0,
-            "id": 40,
-            "type": ["SimpleName"]
-        },
-        {
-            "nullable": 0,
-            "id": 41,
-            "type": ["SimpleName"]
-        },
-        {
-            "nullable": 0,
-            "id": 42,
-            "type": ["VoidType"]
         }
     ],
     "nameList": {
-        "ConcurrentLinkedQueue<ULeak.QueuedLeakEvent>": [14],
-        "ULeak": [
-            18,
-            19
-        ],
-        "flushAllQueuedReferences": [13],
-        "className": [32],
-        "String": [
-            29,
-            30,
-            31
-        ],
-        "LeakInstanceTracker": [11],
-        "registerNewReference": [24],
-        "QueuedLeakEvent": [
-            17,
-            20
-        ],
-        "Object": [
-            25,
-            26,
-            27
-        ],
-        "timeCreated": [36],
-        "leakType": [41],
-        "ConcurrentLinkedQueue": [
-            16,
-            15
-        ],
-        "LeakType": [
-            37,
-            39,
-            40
-        ],
-        "events": [21],
-        "object": [28]
+        "GcCallWrapper": [6],
+        "callGC": [8],
+        "gc": [15],
+        "System": [14]
     },
     "adjacencyList": {
-        "33": [
-            34,
-            35,
-            36
-        ],
-        "12": [
-            13,
-            14,
-            22
-        ],
-        "23": [
-            24,
-            25,
-            29,
-            33,
-            37,
-            42
-        ],
-        "14": [
-            15,
-            21
-        ],
-        "25": [
-            26,
-            28
-        ],
-        "37": [
-            38,
-            39,
-            41
-        ],
-        "15": [
-            16,
-            17
-        ],
-        "26": [27],
-        "39": [40],
-        "17": [
-            18,
-            20
-        ],
-        "18": [19],
-        "29": [
-            30,
-            32
-        ],
         "0": [
             1,
             2,
-            5,
+            5
+        ],
+        "11": [12],
+        "1": [3],
+        "12": [
+            13,
+            15
+        ],
+        "2": [4],
+        "13": [14],
+        "5": [
             6,
+            7
+        ],
+        "7": [
+            8,
+            9,
             10
         ],
-        "1": [3],
-        "2": [4],
-        "5": [7],
-        "6": [8],
-        "7": [9],
-        "30": [31],
-        "10": [
-            11,
-            12,
-            23
-        ]
+        "10": [11]
     }
 }

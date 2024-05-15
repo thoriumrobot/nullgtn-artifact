@@ -1,17 +1,15 @@
 package com.njit.ASTExample;
 
 import com.github.javaparser.ast.*;
-import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.body.*;
 import com.github.javaparser.ast.comments.*;
 import com.github.javaparser.ast.expr.*;
-import com.github.javaparser.ast.expr.Name;
 import com.github.javaparser.ast.stmt.*;
 import com.github.javaparser.ast.type.*;
-import java.lang.reflect.Field;
 import java.util.*;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import java.lang.reflect.Field;
 
 public class ASTToGraphConverter extends ConverterSuper {
 
@@ -72,7 +70,7 @@ public class ASTToGraphConverter extends ConverterSuper {
         ArrayList<String> nodeType = new ArrayList<>();
         nodeType.add(node.getClass().getSimpleName());
 
-        // CatchClauses are out
+        // Summarize
         if (node instanceof CatchClause) {
             return;
         }

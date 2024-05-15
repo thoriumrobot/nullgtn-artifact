@@ -1,33 +1,35 @@
 package com.njit.ASTExample;
 
 import com.github.javaparser.ast.*;
+import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.body.*;
 import com.github.javaparser.ast.comments.*;
 import com.github.javaparser.ast.expr.*;
-import com.github.javaparser.ast.nodeTypes.*;
+import com.github.javaparser.ast.expr.Name;
 import com.github.javaparser.ast.stmt.*;
 import com.github.javaparser.ast.type.*;
 import java.util.*;
-import java.util.HashSet;
-import java.lang.reflect.Field;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
-public class ReannotateClass extends ConverterSuper {
-    Node storedRoot;
-    HashSet<Integer> nodeIds;
+public class ASTToGraphConverterSumm extends ConverterSuper {
+
+    public Node storedRoot;
+    public List<GraphNode> nodes;
+    public Map<Integer, List<Integer>> adjacencyList;
     public Map<String, Set<Integer>> nameList_old;
+    public boolean foundAnnotation;
+    public int rlvCount;
+    public ArrayList<Node> rlvNodes;
 
-    public ReannotateClass(String line, Map<String, Set<Integer>> nameList) {
-        String[] lines = line.split("\\n");
-        nodeIds = new HashSet<>();
+    public ASTToGraphConverterSumm(Map<String, Set<Integer>> nameList) {
+        this.nodes = new ArrayList<>();
+        this.adjacencyList = new HashMap<>();
+        this.nameList = new HashMap<>();
         this.nameList_old = new HashMap<>();
-
-        for (int i = 0; i < lines.length; i++) {
-            try {
-                nodeIds.add(Integer.parseInt(lines[i]));
-            } catch (NumberFormatException e) {
-                System.out.println("Warning: Could not parse: " + lines[i]);
-            }
-        }
+        this.foundAnnotation = false;
+        this.rlvCount = 0;
+        rlvNodes = new ArrayList<>();
 
         for (Map.Entry<String, Set<Integer>> entry : nameList.entrySet()) {
             this.nameList_old.put(entry.getKey(), new HashSet<>(entry.getValue()));
@@ -64,13 +66,13 @@ public class ReannotateClass extends ConverterSuper {
     /*
     Prune all nodes that do not contain names in the list.
     */
-    public void process(Node node) {
+    public void process(Node node, int pid) {
         int nodeId = totCount;
         ArrayList<String> nodeType = new ArrayList<>();
         nodeType.add(node.getClass().getSimpleName());
 
-        // CatchClauses are out
-        if (node instanceof CatchClause) {
+        // Summarize
+        if (!instanceInNODE(node) && !instanceInCHOSEN(node)) {
             return;
         }
 
@@ -116,6 +118,9 @@ public class ReannotateClass extends ConverterSuper {
             VariableDeclarationExpr varDeclExpr = (VariableDeclarationExpr) node;
             Type varType = varDeclExpr.getVariable(0).getType();
 
+            nameList.putIfAbsent(varType.toString(), new HashSet<>());
+            nameList.get(varType.toString()).add(nodeId);
+
             for (Modifier modifier : varDeclExpr.getModifiers()) {
                 nodeType.add(modifier.toString() + "Modifier");
             }
@@ -130,6 +135,9 @@ public class ReannotateClass extends ConverterSuper {
                 nodeType.add(methodType.toString() + "Modifier");
             } else if (methodType.toString().equals("void")) {
                 nodeType.add("void");
+            } else {
+                nameList.putIfAbsent(methodType.toString(), new HashSet<>());
+                nameList.get(methodType.toString()).add(nodeId);
             }
 
             for (Modifier modifier : method.getModifiers()) {
@@ -145,6 +153,9 @@ public class ReannotateClass extends ConverterSuper {
                 nodeType.add(fieldType.toString() + "Modifier");
             } else if (fieldType.toString().equals("void")) {
                 nodeType.add("void");
+            } else {
+                nameList.putIfAbsent(fieldType.toString(), new HashSet<>());
+                nameList.get(fieldType.toString()).add(nodeId);
             }
 
             for (Modifier modifier : field.getModifiers()) {
@@ -160,6 +171,9 @@ public class ReannotateClass extends ConverterSuper {
                 nodeType.add(parameterType.toString() + "Modifier");
             } else if (parameterType.toString().equals("void")) {
                 nodeType.add("void");
+            } else {
+                nameList.putIfAbsent(parameterType.toString(), new HashSet<>());
+                nameList.get(parameterType.toString()).add(nodeId);
             }
         }
 
@@ -171,6 +185,9 @@ public class ReannotateClass extends ConverterSuper {
                 nodeType.add(arrayTypeType.toString() + "Modifier");
             } else if (arrayTypeType.toString().equals("void")) {
                 nodeType.add("void");
+            } else {
+                nameList.putIfAbsent(arrayTypeType.toString(), new HashSet<>());
+                nameList.get(arrayTypeType.toString()).add(nodeId);
             }
         }
 
@@ -179,6 +196,9 @@ public class ReannotateClass extends ConverterSuper {
 
             if (coiType.toString().equals("void")) {
                 nodeType.add("void");
+            } else {
+                nameList.putIfAbsent(coiType.getNameAsString(), new HashSet<>());
+                nameList.get(coiType.getNameAsString()).add(nodeId);
             }
         }
 
@@ -193,6 +213,9 @@ public class ReannotateClass extends ConverterSuper {
         if (node instanceof EnumDeclaration) {
             EnumDeclaration enumDecl = (EnumDeclaration) node;
             String enumType = enumDecl.getName().asString();
+
+            nameList.putIfAbsent(enumType, new HashSet<>());
+            nameList.get(enumType).add(nodeId);
 
             for (Modifier modifier : enumDecl.getModifiers()) {
                 nodeType.add(modifier.toString() + "Modifier");
@@ -253,25 +276,36 @@ public class ReannotateClass extends ConverterSuper {
         }
 
         if (rlvntFlag) {
-            if (nodeIds.contains(nodeId)) {
-                if (node instanceof NodeWithAnnotations<?>) { // Check if node can have annotations
-                    ((NodeWithAnnotations<?>) node).addAnnotation("Nullable");
-                } else {
-                    System.out.println(
-                            "Could not annotate nodeId: " + nodeId + " of type: " + nodeType);
-                }
-            }
+            rlvNodes.add(node);
 
-            // increment node count
-            totCount++;
+            rlvCount++;
         }
+
+        // add the node to the HashMap
+        nodes.add(graphNode);
+
+        // increment node count
+        totCount++;
 
         if (node instanceof MarkerAnnotationExpr) {
             return;
         }
 
+        // iterate through the child nodes
         for (Node child : node.getChildNodes()) {
+            int childId = totCount;
+            String childname = new String(child.getClass().getSimpleName());
             boolean isNullable = false;
+
+            // unconditionally add every name since we pruned the irrelevant nodes (hopefully)
+            if (child instanceof SimpleName) {
+                com.github.javaparser.ast.expr.SimpleName simpleNameNode =
+                        (com.github.javaparser.ast.expr.SimpleName) child;
+                String idName = simpleNameNode.asString();
+
+                nameList.putIfAbsent(idName, new HashSet<>());
+                nameList.get(idName).add(childId);
+            }
 
             // if annotation subtree...
             if (child instanceof MarkerAnnotationExpr) {
@@ -287,25 +321,73 @@ public class ReannotateClass extends ConverterSuper {
                             // if it's a nullable annotation, mark the node as nullable
                             if (identifier.equals("Nullable")) {
                                 isNullable = true;
+                                this.foundAnnotation = true;
+                                GraphNode last = nodes.get(nodes.size() - 1);
+                                last.nullable = 1;
                             } // end if nullable
                         } // end going through fields of name
                     } // end if name node
                 } // end iteration over children of annotation root ("MarkerAnnotationExpr")
             } // end if found annotation subtree
 
-            if (!isNullable) {
-                process(child);
+            // if (!isNullable) {
+            // update neighbors list
+            if (graphNode.chooseNode) {
+                adjacencyList.putIfAbsent(nodeId, new ArrayList<>());
+                adjacencyList.get(nodeId).add(childId);
+            } else {
+                adjacencyList.putIfAbsent(pid, new ArrayList<>());
+                adjacencyList.get(pid).add(childId);
             }
+
+            // recursively process the child if it is not an annotation subtree
+            // ("MarkerAnnotationExpr")
+            process(child, nodeId);
+            // }
         }
     }
 
-    public String toString() {
-        return storedRoot.toString();
+    public List<GraphNode> getNodes() {
+        return nodes;
+    }
+
+    public Map<Integer, List<Integer>> getAdjacencyList() {
+        return adjacencyList;
     }
 
     // wrapper
     public void convert(Node astRoot) {
         storedRoot = astRoot;
-        process(astRoot);
+        process(astRoot, 0);
+    }
+
+    public JSONObject toJson() {
+        JSONArray nodesJsonArray = new JSONArray();
+        for (GraphNode node : nodes) {
+            JSONObject nodeJson = new JSONObject();
+            nodeJson.put("id", node.id);
+            // Convert node.type (ArrayList<String>) to JSONArray
+            JSONArray typeJsonArray = new JSONArray(node.type);
+            nodeJson.put("type", typeJsonArray);
+            nodeJson.put("nullable", node.nullable);
+            nodesJsonArray.put(nodeJson);
+        }
+
+        JSONObject adjacencyListJson = new JSONObject();
+        for (Map.Entry<Integer, List<Integer>> entry : adjacencyList.entrySet()) {
+            adjacencyListJson.put(entry.getKey().toString(), new JSONArray(entry.getValue()));
+        }
+
+        JSONObject nameListJson = new JSONObject();
+        for (Map.Entry<String, Set<Integer>> entry : nameList.entrySet()) {
+            nameListJson.put(entry.getKey().toString(), new JSONArray(entry.getValue()));
+        }
+
+        JSONObject graphJson = new JSONObject();
+        graphJson.put("nodes", nodesJsonArray);
+        graphJson.put("adjacencyList", adjacencyListJson);
+        graphJson.put("nameList", nameListJson);
+
+        return graphJson;
     }
 }

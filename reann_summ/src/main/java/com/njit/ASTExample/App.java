@@ -24,6 +24,7 @@ import java.nio.file.Paths;
 import java.util.*;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import java.lang.reflect.Field;
 
 public class App {
     static String modDir = "/usr/src/app/nullgtn-artifact/reann_summ/";
@@ -50,7 +51,7 @@ public class App {
             for (File file : files) {
                 if (file.isDirectory() && file.toString().contains("/src/main")) {
                     HashMap<String, Integer> fileCount = new HashMap<>();
-                    HashMap<String, ASTToGraphConverter> converters = new HashMap<>();
+                    HashMap<String, ASTToGraphConverterSumm> converters = new HashMap<>();
                     HashMap<String, HashMap<Integer, Double>> scores = new HashMap<>();
 
                     List<File[]> javaFilePairs = getJavaFilePairs(file.toString());
@@ -110,7 +111,7 @@ public class App {
                                     }
                                     converters.put(
                                             pair[i].getAbsolutePath(),
-                                            new ASTToGraphConverter(grownames[i].nameList));
+                                            new ASTToGraphConverterSumm(grownames[i].nameList));
                                     converters
                                             .get(pair[i].getAbsolutePath())
                                             .convert(compilationUnits[i]);
@@ -157,12 +158,10 @@ public class App {
                                     int exitCode = process.waitFor();
 
                                     if (exitCode == 0) {
-                                        cluster[i] =
-                                                "data"
-                                                        + String.valueOf(
+                                        cluster[i] = String.valueOf(
                                                                 output.toString().charAt(0));
                                     } else {
-                                        cluster[i] = "data1";
+                                        cluster[i] = "1";
                                     }
                                 }
 
@@ -242,7 +241,8 @@ public class App {
                     // reannotate all the files
                     for (Map.Entry<String, Integer> entry : fileCount.entrySet()) {
                         File newFile = new File(entry.getKey());
-                        ASTToGraphConverter fileConverter = converters.get(entry.getKey());
+                        ASTToGraphConverter fileConverter = new ASTToGraphConverter(converters.get(entry.getKey()).nameList); //converters.get(entry.getKey());
+                        fileConverter.convert(parseJavaFile(newFile));
                         CompilationUnit fileRoot = (CompilationUnit) fileConverter.storedRoot;
 
                         HashMap<Integer, Double> fileScores = scores.get(entry.getKey());

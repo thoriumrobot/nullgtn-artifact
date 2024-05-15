@@ -39,7 +39,7 @@ abstract class LeakTracker {
      * A placeholder WeakReference that acts as a marker to tell if the GC has run since the
      * allocation
      */
-    @Nullable
+    @Nullable()
     private WeakReference<Object> gcIndicatorWeakReference;
 
     LeakTracker(Class<?> eventClass, WeakReferenceGenerator weakReferenceGenerator, String name, final LeakType leakType) {
