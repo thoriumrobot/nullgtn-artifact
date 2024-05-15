@@ -5,6 +5,8 @@ A tool that automatically reannotates Java projects using graph learning models.
 
 OS: Tested exclusively on Ubuntu.
 
+Graphics card: Tested on a system with a 16 GB GPU and CUDA installed.
+
 Prerequisites:
 
 conda create --name nullgtn python=3.8 openjdk=11.0 mkl==2022.1.0 mkl-devel==2022.1.0 mkl-include==2022.1.0 maven -c anaconda -c conda-forge
