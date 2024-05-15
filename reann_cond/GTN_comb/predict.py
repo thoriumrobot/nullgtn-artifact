@@ -221,7 +221,7 @@ model = model.eval()
 
 with torch.no_grad():
     #model.eval()
-    loss, y_pred, _ = model.forward(A, node_features, test_node, test_target)
+    y_pred = model.forward(A, node_features, test_node, test_target, eval=True)
     # Additional processing based on the prediction task
 
 #print(y_pred)
