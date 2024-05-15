@@ -5,6 +5,8 @@ A tool that automatically reannotates Java projects using graph learning models.
 
 OS: Tested exclusively on Ubuntu.
 
+Note: Currently, the directory names given as input must contain a / (slash) at the end. Please use absolute paths.
+
 Prerequisites:
 
 conda create --name nullgtn python=3.8 openjdk=11.0 maven -c anaconda -c conda-forge
