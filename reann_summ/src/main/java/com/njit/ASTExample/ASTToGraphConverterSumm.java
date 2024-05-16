@@ -73,7 +73,7 @@ public class ASTToGraphConverterSumm extends ConverterSuper {
         nodeType.add(node.getClass().getSimpleName());
 
         // Summarize
-        if (!instanceInNODE(node) && !instanceInCHOSEN(node)) {
+        if (node instanceof CatchClause) {
             return;
         }
 
@@ -333,7 +333,7 @@ public class ASTToGraphConverterSumm extends ConverterSuper {
 
             // if (!isNullable) {
             // update neighbors list
-            if (graphNode.chooseNode) {
+            if (graphNode.chooseNode && instanceInCHOSEN(node)) {
                 adjacencyList.putIfAbsent(nodeId, new ArrayList<>());
                 adjacencyList.get(nodeId).add(childId);
             } else {
