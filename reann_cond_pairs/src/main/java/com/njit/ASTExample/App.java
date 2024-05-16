@@ -256,10 +256,10 @@ public class App {
 
                             if (((node instanceof MethodDeclaration)
                                             && nodeEntry.getValue()
-                                                    > fileCount.get(entry.getKey()) * 0.7341)
+                                                    > fileCount.get(entry.getKey()) * 0.8441)
                                     || ((node instanceof FieldDeclaration)
                                             && nodeEntry.getValue()
-                                                    > fileCount.get(entry.getKey()) * 0.8449)) {
+                                                    > fileCount.get(entry.getKey()) * 0.9488)) {
                                 ((NodeWithAnnotations<?>) node).addAnnotation("Nullable");
                             }
                         }
