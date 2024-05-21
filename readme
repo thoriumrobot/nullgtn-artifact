@@ -3,7 +3,7 @@ NullGTN
 
 A tool that automatically reannotates Java projects using graph learning models.
 
-OS: Tested exclusively on Ubuntu.
+OS: Tested exclusively on Ubuntu 22.04.
 
 Graphics card: Tested on a system with a 16 GB GPU and CUDA installed.
 
