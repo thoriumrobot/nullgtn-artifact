@@ -152,7 +152,7 @@ public class App {
                                     scores.putIfAbsent(pair[i].getAbsolutePath(), new HashMap<>());
 
                                     // Add score to the node's inner HashMap
-                                    line = "";
+                                    String line = "";
                                     int lineCount = 0;
 
                                     while ((line = reader.readLine()) != null) {
