@@ -182,32 +182,44 @@ public class App {
         }
     }
 
-    public static Map<String, Set<Integer>> sampleNodes(Map<String, Set<Integer>> nameList, int maxNodes) {
-        Map<String, Set<Integer>> sampledNameList = new HashMap<>();
-        int nodeCount = 0;
+public static Map<String, Set<Integer>> sampleNodes(Map<String, Set<Integer>> nameList, int maxNodes) {
+    Map<String, Set<Integer>> sampledNameList = new HashMap<>();
+    int nodeCount = 0;
 
-        for (Map.Entry<String, Set<Integer>> entry : nameList.entrySet()) {
-            if (nodeCount + entry.getValue().size() <= maxNodes) {
-                sampledNameList.put(entry.getKey(), entry.getValue());
-                nodeCount += entry.getValue().size();
-            } else {
-                int remainingNodes = maxNodes - nodeCount;
-                Set<Integer> sampledSet = new HashSet<>();
-                int count = 0;
-                for (Integer value : entry.getValue()) {
-                    if (count < remainingNodes) {
-                        sampledSet.add(value);
-                        count++;
-                    } else {
-                        break;
-                    }
-                }
-                sampledNameList.put(entry.getKey(), sampledSet);
-                break;
+    // Prioritize important nodes (e.g., based on identifiers) if needed
+    List<Map.Entry<String, Set<Integer>>> entries = new ArrayList<>(nameList.entrySet());
+    entries.sort((a, b) -> Integer.compare(b.getValue().size(), a.getValue().size()));
+
+    for (Map.Entry<String, Set<Integer>> entry : entries) {
+        Set<Integer> currentSet = entry.getValue();
+        if (nodeCount + currentSet.size() <= maxNodes) {
+            sampledNameList.put(entry.getKey(), currentSet);
+            nodeCount += currentSet.size();
+        } else {
+            Set<Integer> sampledSet = new HashSet<>();
+            Iterator<Integer> iterator = currentSet.iterator();
+            while (iterator.hasNext() && nodeCount < maxNodes) {
+                sampledSet.add(iterator.next());
+                nodeCount++;
             }
+            sampledNameList.put(entry.getKey(), sampledSet);
+            break;
         }
+    }
 
-        return sampledNameList;
+    // Ensure the nameList is complete for the chosen nodes
+    ensureCompleteNameList(sampledNameList, nameList);
+
+    return sampledNameList;
+}
+
+private static void ensureCompleteNameList(Map<String, Set<Integer>> sampledNameList, Map<String, Set<Integer>> originalNameList) {
+    for (String key : sampledNameList.keySet()) {
+        if (!sampledNameList.get(key).equals(originalNameList.get(key))) {
+            sampledNameList.put(key, originalNameList.get(key));
+        }
+    }
+}
     }
 }
 
