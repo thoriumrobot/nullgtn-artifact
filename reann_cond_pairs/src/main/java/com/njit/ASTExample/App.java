@@ -26,10 +26,6 @@ public class App {
     static File rootDir = new File("/usr/src/app/nullgtn-artifact/minstripped/");
     static String saveDir = "/usr/src/app/nullgtn-artifact/50_20/";
 
-    /*
-    Loop over the input classes, parse AST, convert to graph and save to file.
-    main() also tries to prune each AST based on several considerations.
-    */
     public static void main(String[] args) {
         modDir = args[0] + "reann_cond_pairs/";
         rootDir = new File(args[1]);
@@ -156,7 +152,7 @@ public class App {
                                     scores.putIfAbsent(pair[i].getAbsolutePath(), new HashMap<>());
 
                                     // Add score to the node's inner HashMap
-                                    String line = "";
+                                    line = "";
                                     int lineCount = 0;
 
                                     while ((line = reader.readLine()) != null) {
@@ -304,9 +300,9 @@ public class App {
         Map<Integer, List<Integer>> parentToChildren = new HashMap<>();
 
         for (BaseNames findname : findnames) {
-            List<String> keys = new ArrayList<String>(findname.nameList.keySet());
+            List<Integer> keys = new ArrayList<Integer>(findname.nameList.keySet());
             while (nodesToRemove > 0 && !keys.isEmpty()) {
-                String key = keys.remove(0);
+                Integer key = keys.remove(0);
                 if (findname.nameList.containsKey(key)) {
                     Set<Integer> children = findname.nameList.get(key);
                     for (Integer child : children) {
@@ -323,7 +319,7 @@ public class App {
             for (Map.Entry<Integer, Set<Integer>> entry : findname.nameList.entrySet()) {
                 Integer parent = entry.getKey();
                 for (Integer child : entry.getValue()) {
-                    parentToChildren.putIfAbsent(parent, new ArrayList<>());
+                    parentToChildren.putIfAbsent(parent, new ArrayList<Integer>());
                     parentToChildren.get(parent).add(child);
                 }
             }
