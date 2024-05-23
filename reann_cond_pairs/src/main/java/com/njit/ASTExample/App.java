@@ -304,7 +304,7 @@ public class App {
         Map<Integer, List<Integer>> parentToChildren = new HashMap<>();
 
         for (BaseNames findname : findnames) {
-            List<Integer> keys = new ArrayList<Integer>(findname.nameList.keySet());
+            List<Integer> keys = new ArrayList<>(findname.nameList.keySet());
             while (nodesToRemove > 0 && !keys.isEmpty()) {
                 Integer key = keys.remove(0);
                 if (findname.nameList.containsKey(key)) {
@@ -323,7 +323,7 @@ public class App {
             for (Map.Entry<Integer, Set<Integer>> entry : findname.nameList.entrySet()) {
                 Integer parent = entry.getKey();
                 for (Integer child : entry.getValue()) {
-                    parentToChildren.putIfAbsent(parent, new ArrayList<Integer>());
+                    parentToChildren.putIfAbsent(parent, new ArrayList<>());
                     parentToChildren.get(parent).add(child);
                 }
             }
