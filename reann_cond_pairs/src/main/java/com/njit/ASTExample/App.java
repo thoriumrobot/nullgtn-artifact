@@ -323,7 +323,7 @@ public class App {
             for (Map.Entry<Integer, Set<Integer>> entry : findname.nameList.entrySet()) {
                 Integer parent = entry.getKey();
                 for (Integer child : entry.getValue()) {
-                    parentToChildren.putIfAbsent(parent, new ArrayList<>());
+                    parentToChildren.putIfAbsent(parent, new ArrayList<Integer>());
                     parentToChildren.get(parent).add(child);
                 }
             }
