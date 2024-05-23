@@ -300,9 +300,9 @@ public class App {
         Map<Integer, List<Integer>> parentToChildren = new HashMap<>();
 
         for (BaseNames findname : findnames) {
-            List<Integer> keys = new ArrayList<Integer>(findname.nameList.keySet());
+            List<String> keys = new ArrayList<String>(findname.nameList.keySet());
             while (nodesToRemove > 0 && !keys.isEmpty()) {
-                Integer key = keys.remove(0);
+                String key = keys.remove(0);
                 if (findname.nameList.containsKey(key)) {
                     Set<Integer> children = findname.nameList.get(key);
                     for (Integer child : children) {
