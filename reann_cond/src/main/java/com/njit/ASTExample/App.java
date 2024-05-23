@@ -45,7 +45,6 @@ public class App {
 
     public static void processJavaFiles(File rootDir, String subdir) {
         try {
-
             File[] files = rootDir.listFiles();
             if (files == null) return;
 
@@ -212,27 +211,5 @@ public class App {
     }
 }
 
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public static Map<String, List<Integer>> sampleNodes(Map<String, List<Integer>> nameList, int maxNodes) {
-        Map<String, List<Integer>> sampledNameList = new HashMap<>();
-        int nodeCount = 0;
-
-        for (Map.Entry<String, List<Integer>> entry : nameList.entrySet()) {
-            if (nodeCount + entry.getValue().size() <= maxNodes) {
-                sampledNameList.put(entry.getKey(), entry.getValue());
-                nodeCount += entry.getValue().size();
-            } else {
-                int remainingNodes = maxNodes - nodeCount;
-                sampledNameList.put(entry.getKey(), entry.getValue().subList(0, remainingNodes));
-                break;
-            }
-        }
-
-        return sampledNameList;
-    }
 }
 
