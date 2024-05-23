@@ -183,6 +183,40 @@ public class App {
         }
     }
 
+    public static Map<String, Set<Integer>> sampleNodes(Map<String, Set<Integer>> nameList, int maxNodes) {
+        Map<String, Set<Integer>> sampledNameList = new HashMap<>();
+        int nodeCount = 0;
+
+        for (Map.Entry<String, Set<Integer>> entry : nameList.entrySet()) {
+            if (nodeCount + entry.getValue().size() <= maxNodes) {
+                sampledNameList.put(entry.getKey(), entry.getValue());
+                nodeCount += entry.getValue().size();
+            } else {
+                int remainingNodes = maxNodes - nodeCount;
+                Set<Integer> sampledSet = new HashSet<>();
+                int count = 0;
+                for (Integer value : entry.getValue()) {
+                    if (count < remainingNodes) {
+                        sampledSet.add(value);
+                        count++;
+                    } else {
+                        break;
+                    }
+                }
+                sampledNameList.put(entry.getKey(), sampledSet);
+                break;
+            }
+        }
+
+        return sampledNameList;
+    }
+}
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public static Map<String, List<Integer>> sampleNodes(Map<String, List<Integer>> nameList, int maxNodes) {
         Map<String, List<Integer>> sampledNameList = new HashMap<>();
         int nodeCount = 0;
