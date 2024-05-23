@@ -2,15 +2,8 @@ package com.njit.ASTExample;
 
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ParseResult;
-import com.github.javaparser.ast.*;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
-import com.github.javaparser.ast.body.*;
-import com.github.javaparser.ast.comments.*;
-import com.github.javaparser.ast.expr.*;
-import com.github.javaparser.ast.nodeTypes.*;
-import com.github.javaparser.ast.stmt.*;
-import com.github.javaparser.ast.type.*;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
