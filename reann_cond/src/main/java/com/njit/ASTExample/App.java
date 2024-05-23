@@ -69,6 +69,11 @@ public class App {
                                 grownames.convert(compilationUnit);
                             }
 
+                            // Sample or partition the AST nodes if totCount exceeds 8000
+                            if (grownames.totCount > 8000) {
+                                grownames.nameList = sampleNodes(grownames.nameList, 8000);
+                            }
+
                             ASTToGraphConverter converter =
                                     new ASTToGraphConverter(grownames.nameList);
                             converter.convert(compilationUnit);
@@ -177,4 +182,23 @@ public class App {
             e.printStackTrace();
         }
     }
+
+    public static Map<String, List<Integer>> sampleNodes(Map<String, List<Integer>> nameList, int maxNodes) {
+        Map<String, List<Integer>> sampledNameList = new HashMap<>();
+        int nodeCount = 0;
+
+        for (Map.Entry<String, List<Integer>> entry : nameList.entrySet()) {
+            if (nodeCount + entry.getValue().size() <= maxNodes) {
+                sampledNameList.put(entry.getKey(), entry.getValue());
+                nodeCount += entry.getValue().size();
+            } else {
+                int remainingNodes = maxNodes - nodeCount;
+                sampledNameList.put(entry.getKey(), entry.getValue().subList(0, remainingNodes));
+                break;
+            }
+        }
+
+        return sampledNameList;
+    }
 }
+
