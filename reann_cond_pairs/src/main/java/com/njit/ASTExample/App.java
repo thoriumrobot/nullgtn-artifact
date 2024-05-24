@@ -42,6 +42,8 @@ public class App {
         processJavaFiles(rootDir, "");
     }
 
+import java.util.stream.Collectors;
+
     public static void processJavaFiles(File rootDir, String subdir) {
         try {
             File[] files = rootDir.listFiles();
