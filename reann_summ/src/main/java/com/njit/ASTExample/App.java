@@ -2,15 +2,12 @@ package com.njit.ASTExample;
 
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ParseResult;
-import com.github.javaparser.ast.*;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
-import com.github.javaparser.ast.body.*;
-import com.github.javaparser.ast.comments.*;
-import com.github.javaparser.ast.expr.*;
-import com.github.javaparser.ast.nodeTypes.*;
-import com.github.javaparser.ast.stmt.*;
-import com.github.javaparser.ast.type.*;
+import com.github.javaparser.ast.body.MethodDeclaration;
+import com.github.javaparser.ast.body.FieldDeclaration;
+import com.github.javaparser.ast.nodeTypes.NodeWithAnnotations;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -22,6 +19,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -30,10 +28,6 @@ public class App {
     static File rootDir = new File("/usr/src/app/nullgtn-artifact/minstripped/");
     static String saveDir = "/usr/src/app/nullgtn-artifact/50_20/";
 
-    /*
-    Loop over the input classes, parse AST, convert to graph and save to file.
-    main() also tries to prune each AST based on several considerations.
-    */
     public static void main(String[] args) {
         modDir = args[0] + "reann_summ/";
         rootDir = new File(args[1]);
@@ -75,11 +69,7 @@ public class App {
                             for (int i = 0; i < 2; i++) {
                                 if (converters.containsKey(pair[i].getAbsolutePath())) {
                                     totCount += converters.get(pair[i].getAbsolutePath()).totCount;
-                                    totCount +=
-                                            converters
-                                                    .get(pair[i].getAbsolutePath())
-                                                    .nameList_old
-                                                    .size();
+                                    totCount += converters.get(pair[i].getAbsolutePath()).nameList_old.size();
                                     continue;
                                 }
 
@@ -90,144 +80,109 @@ public class App {
                                 totCount += findnames[i].nameList.size();
                             }
 
-                            if (totCount <= 8000) {
-                                BufferedWriter writer =
-                                        new BufferedWriter(
-                                                new FileWriter(modDir + "temp_output.json", true));
-
+                            if (totCount > 8000) {
                                 for (int i = 0; i < 2; i++) {
                                     if (converters.containsKey(pair[i].getAbsolutePath())) {
                                         continue;
                                     }
 
-                                    grownames[i] = new ExpandNames(findnames[i].nameList);
+                                    Map.Entry<List<Node>, Map<String, List<Integer>>> sampled = sampleAST(compilationUnits[i], findnames[i].nameList, 8000);
+                                    findnames[i].nameList = sampled.getValue();
+                                    compilationUnits[i] = rebuildCompilationUnit(sampled.getKey());
+                                }
+                            }
+
+                            BufferedWriter writer = new BufferedWriter(new FileWriter(modDir + "temp_output.json", true));
+
+                            for (int i = 0; i < 2; i++) {
+                                if (converters.containsKey(pair[i].getAbsolutePath())) {
+                                    continue;
+                                }
+
+                                grownames[i] = new ExpandNames(findnames[i].nameList);
+                                grownames[i].convert(compilationUnits[i]);
+
+                                while (!grownames[i].nameList.equals(grownames[i].nameList_old)) {
+                                    grownames[i] = new ExpandNames(grownames[i].nameList);
                                     grownames[i].convert(compilationUnits[i]);
-
-                                    while (!grownames[i].nameList.equals(
-                                            grownames[i].nameList_old)) {
-                                        grownames[i] = new ExpandNames(grownames[i].nameList);
-                                        grownames[i].convert(compilationUnits[i]);
-                                    }
-                                    converters.put(
-                                            pair[i].getAbsolutePath(),
-                                            new ASTToGraphConverterSumm(grownames[i].nameList));
-                                    converters
-                                            .get(pair[i].getAbsolutePath())
-                                            .convert(compilationUnits[i]);
                                 }
+                                converters.put(pair[i].getAbsolutePath(), new ASTToGraphConverterSumm(grownames[i].nameList));
+                                converters.get(pair[i].getAbsolutePath()).convert(compilationUnits[i]);
+                            }
 
-                                for (int i = 0; i < 2; i++) {
-                                    JSONObject graphJson =
-                                            converters.get(pair[i].getAbsolutePath()).toJson();
-                                    writer.write(graphJson.toString(4) + "\n");
+                            for (int i = 0; i < 2; i++) {
+                                JSONObject graphJson = converters.get(pair[i].getAbsolutePath()).toJson();
+                                writer.write(graphJson.toString(4) + "\n");
 
-                                    BufferedWriter writer_cluster =
-                                            new BufferedWriter(
-                                                    new FileWriter(
-                                                            modDir + "temp_output_" + i + ".json"));
-                                    JSONObject graphJson_cluster =
-                                            converters.get(pair[i].getAbsolutePath()).toJson();
-                                    writer_cluster.write(graphJson_cluster.toString(4) + "\n");
+                                BufferedWriter writer_cluster = new BufferedWriter(new FileWriter(modDir + "temp_output_" + i + ".json"));
+                                JSONObject graphJson_cluster = converters.get(pair[i].getAbsolutePath()).toJson();
+                                writer_cluster.write(graphJson_cluster.toString(4) + "\n");
 
-                                    writer_cluster.close();
+                                writer_cluster.close();
+                            }
+
+                            writer.close();
+
+                            // cluster class
+                            String[] cluster = new String[2];
+
+                            for (int i = 0; i < 2; i++) {
+                                ProcessBuilder processBuilder = new ProcessBuilder("python", modDir + "predkmm.py", String.valueOf(i), modDir);
+                                Process process = processBuilder.start();
+                                BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+                                StringBuilder output = new StringBuilder();
+                                String line;
+                                while ((line = reader.readLine()) != null) {
+                                    output.append(line).append("\n");
                                 }
+                                int exitCode = process.waitFor();
 
-                                writer.close();
+                                if (exitCode == 0) {
+                                    cluster[i] = String.valueOf(output.toString().charAt(0));
+                                } else {
+                                    cluster[i] = "1";
+                                }
+                            }
 
-                                // cluster class
-                                String[] cluster = new String[2];
+                            // predict the nodes
+                            for (int i = 0; i < 2; i++) {
+                                ProcessBuilder processBuilder = new ProcessBuilder("python", modDir + "GTN_comb/predict.py", cluster[i], modDir);
+                                Process process = processBuilder.start();
+                                BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+                                int exitCode = process.waitFor();
 
-                                for (int i = 0; i < 2; i++) {
-                                    ProcessBuilder processBuilder =
-                                            new ProcessBuilder(
-                                                    "python",
-                                                    modDir + "predkmm.py",
-                                                    String.valueOf(i),
-                                                    modDir);
-                                    Process process = processBuilder.start();
-                                    BufferedReader reader =
-                                            new BufferedReader(
-                                                    new InputStreamReader(
-                                                            process.getInputStream()));
-                                    StringBuilder output = new StringBuilder();
-                                    String line;
+                                if (exitCode == 0) {
+                                    fileCount.putIfAbsent(pair[i].getAbsolutePath(), 0);
+                                    fileCount.put(pair[i].getAbsolutePath(), fileCount.get(pair[i].getAbsolutePath()) + 1);
+
+                                    scores.putIfAbsent(pair[i].getAbsolutePath(), new HashMap<>());
+
+                                    // Add score to the node's inner HashMap
+                                    String line = "";
+                                    int lineCount = 0;
+
                                     while ((line = reader.readLine()) != null) {
-                                        output.append(line).append("\n");
-                                    }
-                                    int exitCode = process.waitFor();
-
-                                    if (exitCode == 0) {
-                                        cluster[i] = String.valueOf(
-                                                                output.toString().charAt(0));
-                                    } else {
-                                        cluster[i] = "1";
-                                    }
-                                }
-
-                                // predict the nodes
-                                for (int i = 0; i < 2; i++) {
-                                    ProcessBuilder processBuilder =
-                                            new ProcessBuilder(
-                                                    "python",
-                                                    modDir + "GTN_comb/predict.py",
-                                                    cluster[i],
-                                                    modDir);
-                                    Process process = processBuilder.start();
-                                    BufferedReader reader =
-                                            new BufferedReader(
-                                                    new InputStreamReader(
-                                                            process.getInputStream()));
-                                    int exitCode = process.waitFor();
-
-                                    if (exitCode == 0) {
-                                        fileCount.putIfAbsent(pair[i].getAbsolutePath(), 0);
-                                        fileCount.put(
-                                                pair[i].getAbsolutePath(),
-                                                fileCount.get(pair[i].getAbsolutePath()) + 1);
-
-                                        scores.putIfAbsent(
-                                                pair[i].getAbsolutePath(), new HashMap<>());
-
-                                        // Add score to the node's inner HashMap
-                                        String line = "";
-                                        int lineCount = 0;
-
-                                        while ((line = reader.readLine()) != null) {
-                                            int rnno, fidx;
-                                            if (lineCount
-                                                    < converters.get(pair[0].getAbsolutePath())
-                                                            .rlvCount) {
-                                                if (i == 1) {
-                                                    continue;
-                                                }
-
-                                                fidx = 0;
-                                                rnno = lineCount;
-                                            } else {
-                                                if (i == 0) {
-                                                    continue;
-                                                }
-
-                                                fidx = 1;
-                                                rnno =
-                                                        lineCount
-                                                                - converters.get(
-                                                                                pair[0]
-                                                                                        .getAbsolutePath())
-                                                                        .rlvCount;
+                                        int rnno, fidx;
+                                        if (lineCount < converters.get(pair[0].getAbsolutePath()).rlvCount) {
+                                            if (i == 1) {
+                                                continue;
                                             }
 
-                                            scores.get(pair[fidx].getAbsolutePath())
-                                                    .putIfAbsent(rnno, 0.0);
-                                            scores.get(pair[fidx].getAbsolutePath())
-                                                    .put(
-                                                            rnno,
-                                                            scores.get(pair[fidx].getAbsolutePath())
-                                                                            .get(rnno)
-                                                                    + Double.parseDouble(line));
+                                            fidx = 0;
+                                            rnno = lineCount;
+                                        } else {
+                                            if (i == 0) {
+                                                continue;
+                                            }
 
-                                            lineCount++;
+                                            fidx = 1;
+                                            rnno = lineCount - converters.get(pair[0].getAbsolutePath()).rlvCount;
                                         }
+
+                                        scores.get(pair[fidx].getAbsolutePath()).putIfAbsent(rnno, 0.0);
+                                        scores.get(pair[fidx].getAbsolutePath()).put(rnno, scores.get(pair[fidx].getAbsolutePath()).get(rnno) + Double.parseDouble(line));
+
+                                        lineCount++;
                                     }
                                 }
                             }
@@ -240,7 +195,7 @@ public class App {
                     // reannotate all the files
                     for (Map.Entry<String, Integer> entry : fileCount.entrySet()) {
                         File newFile = new File(entry.getKey());
-                        ASTToGraphConverter fileConverter = new ASTToGraphConverter(converters.get(entry.getKey()).nameList); //converters.get(entry.getKey());
+                        ASTToGraphConverter fileConverter = new ASTToGraphConverter(converters.get(entry.getKey()).nameList);
                         fileConverter.convert(parseJavaFile(newFile));
                         CompilationUnit fileRoot = (CompilationUnit) fileConverter.storedRoot;
 
@@ -248,19 +203,13 @@ public class App {
 
                         for (Map.Entry<Integer, Double> nodeEntry : fileScores.entrySet()) {
                             Node node;
-                            if (!fileConverter.rlvNodes.isEmpty()
-                                    && nodeEntry.getKey() < fileConverter.rlvNodes.size()) {
+                            if (!fileConverter.rlvNodes.isEmpty() && nodeEntry.getKey() < fileConverter.rlvNodes.size()) {
                                 node = fileConverter.rlvNodes.get(nodeEntry.getKey());
                             } else {
                                 continue;
                             }
 
-                            if (((node instanceof MethodDeclaration)
-                                            && nodeEntry.getValue()
-                                                    > fileCount.get(entry.getKey()) * 0.7341)
-                                    || ((node instanceof FieldDeclaration)
-                                            && nodeEntry.getValue()
-                                                    > fileCount.get(entry.getKey()) * 0.8449)) {
+                            if (((node instanceof MethodDeclaration) && nodeEntry.getValue() > fileCount.get(entry.getKey()) * 0.7341) || ((node instanceof FieldDeclaration) && nodeEntry.getValue() > fileCount.get(entry.getKey()) * 0.8449)) {
                                 ((NodeWithAnnotations<?>) node).addAnnotation("Nullable");
                             }
                         }
@@ -277,9 +226,7 @@ public class App {
                         }
 
                         String filePath = dirPath + newFile.getName();
-                        Files.write(
-                                Paths.get(filePath),
-                                fileRoot.toString().getBytes(StandardCharsets.UTF_8));
+                        Files.write(Paths.get(filePath), fileRoot.toString().getBytes(StandardCharsets.UTF_8));
                     }
 
                     // annotate Parameters
@@ -294,6 +241,51 @@ public class App {
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }
+    }
+
+    public static Map.Entry<List<Node>, Map<String, List<Integer>>> sampleAST(CompilationUnit cu, Map<String, List<Integer>> nameList, int maxNodes) {
+        List<Node> sampledNodes = new ArrayList<>();
+        Map<String, List<Integer>> sampledNameList = new HashMap<>();
+
+        Set<Node> visited = new HashSet<>();
+        Queue<Node> queue = new LinkedList<>();
+        queue.add(cu);
+
+        while (!queue.isEmpty() && sampledNodes.size() < maxNodes) {
+            Node node = queue.poll();
+            if (visited.contains(node)) {
+                continue;
+            }
+            visited.add(node);
+
+            sampledNodes.add(node);
+
+            // Update sampled nameList
+            for (Map.Entry<String, List<Integer>> entry : nameList.entrySet()) {
+                for (Integer line : entry.getValue()) {
+                    if (node.getBegin().isPresent() && node.getBegin().get().line == line) {
+                        sampledNameList.putIfAbsent(entry.getKey(), new ArrayList<>());
+                        sampledNameList.get(entry.getKey()).add(line);
+                    }
+                }
+            }
+
+            for (Node child : node.getChildNodes()) {
+                if (!visited.contains(child) && sampledNodes.size() < maxNodes) {
+                    queue.add(child);
+                }
+            }
+        }
+
+        return new AbstractMap.SimpleEntry<>(sampledNodes, sampledNameList);
+    }
+
+    private static CompilationUnit rebuildCompilationUnit(List<Node> nodes) {
+        CompilationUnit cu = new CompilationUnit();
+        for (Node node : nodes) {
+            cu.add(node);
+        }
+        return cu;
     }
 
     private static List<File> getJavaFiles(File dir) {
@@ -321,7 +313,7 @@ public class App {
 
         for (int i = 0; i < javaFiles.size(); i++) {
             for (int j = i + 1; j < javaFiles.size(); j++) {
-                pairs.add(new File[] {javaFiles.get(i), javaFiles.get(j)});
+                pairs.add(new File[]{javaFiles.get(i), javaFiles.get(j)});
             }
         }
 
