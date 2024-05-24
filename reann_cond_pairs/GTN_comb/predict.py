@@ -19,6 +19,23 @@ from sklearn.metrics import f1_score as sk_f1_score
 from utils import init_seed, _norm
 import argparse
 
+def getobj(file):
+    while True:
+        s = file.read(1)
+        if not s:
+            return s
+        if s == '{':
+            break
+    depth = 1
+    while depth > 0:
+        char = file.read(1)
+        if char == '{':
+            depth += 1
+        if char == '}':
+            depth -= 1
+        s += char
+    return s
+
 def get_batch(graph_json_list, batch_size=8000):
     current_batch = []
     current_size = 0
@@ -46,25 +63,98 @@ if __name__ == "__main__":
             obj_str = getobj(file)
             if not obj_str:
                 break
-            obj_str = loads(obj_str)
+            obj_str = json.loads(obj_str)
             json_data.append(obj_str)
 
     for batch in get_batch(json_data):
         # Process the batch here
-        # Create adjacency matrices and node features for the batch
-        pass
+        nodes = []
+        adjacency_list = []
+        name_list = {}
+        current_id = 0
 
-    y_pred = model.forward(A, node_features, test_node, test_target, eval=True)
-    # Additional processing based on the prediction task
+        for graph_json in batch:
+            nodes.extend(graph_json['nodes'])
+            for k, v in graph_json['adjacencyList'].items():
+                adjacency_list.append([int(k) + current_id, [x + current_id for x in v]])
+            for k, v in graph_json['nameList'].items():
+                if k not in name_list:
+                    name_list[k] = []
+                name_list[k].extend([x + current_id for x in v])
+            current_id += len(graph_json['nodes'])
 
-#print(y_pred)
+        node_count = len(nodes)
+        A_n = np.zeros((node_count, node_count))
+        A_t = np.zeros((node_count, node_count + len(name_list)))
 
-firstlen=len(json_data[0]['nodes'])
+        for edge in adjacency_list:
+            for neighbor in edge[1]:
+                A_n[edge[0], neighbor] = 1
 
-for i, flake in enumerate(snowflakes):
-    if flake<firstlen:
-       node_types=json_data[0]['nodes'][flake]['type']
-    else:
-       node_types=json_data[1]['nodes'][flake-firstlen]['type']
-    if ("MethodDeclaration" in node_types) or ("FieldDeclaration" in node_types):
-        print(float(y_pred[i,1]-y_pred[i,0]))
+        A_n = csr_matrix(A_n)
+
+        for name, indices in name_list.items():
+            for index in indices:
+                A_t[index, node_count + list(name_list.keys()).index(name)] = 1
+
+        A_t = csr_matrix(A_t)
+
+        null_feat = np.zeros((node_count, 2))
+        type_feat = np.zeros((node_count, len(set(node['type'] for node in nodes)) + 1))
+
+        for i, node in enumerate(nodes):
+            if node['nullable'] == 0:
+                null_feat[i, 0] = 1
+            else:
+                null_feat[i, 1] = 1
+            for node_type in node['type']:
+                type_feat[i, list(set(node['type'] for node in nodes)).index(node_type)] = 1
+
+        node_features = type_feat
+
+        edges = [A_n, A_n.transpose(), A_t, A_t.transpose()]
+
+        num_nodes = edges[0].shape[0]
+        A = []
+        for edge in edges:
+            edge_tmp = torch.from_numpy(np.vstack((edge.nonzero()[1], edge.nonzero()[0]))).type(torch.cuda.LongTensor)
+            value_tmp = torch.ones(edge_tmp.shape[1]).type(torch.cuda.FloatTensor)
+            edge_tmp, value_tmp = add_self_loops(edge_tmp, edge_attr=value_tmp, fill_value=1e-20, num_nodes=num_nodes)
+            deg_inv_sqrt, deg_row, deg_col = _norm(edge_tmp.detach(), num_nodes, value_tmp.detach())
+            value_tmp = deg_inv_sqrt[deg_row] * value_tmp
+            A.append((edge_tmp, value_tmp))
+
+        edge_tmp = torch.stack((torch.arange(0, num_nodes), torch.arange(0, num_nodes))).type(torch.cuda.LongTensor)
+        value_tmp = torch.ones(num_nodes).type(torch.cuda.FloatTensor)
+        A.append((edge_tmp, value_tmp))
+
+        node_features = torch.from_numpy(node_features).type(torch.cuda.FloatTensor)
+
+        model_path = os.path.join(directory, 'nullgtn_data' + sys.argv[1] + '.json.pkl')
+        with open(model_path, 'rb') as f:
+            model = pickle.load(f)
+
+        model = model.cuda()
+        model = model.eval()
+
+        test_idx = np.array([i for i, node in enumerate(nodes) if any(x in ["MethodDeclaration", "FieldDeclaration"] for x in node['type'])])
+        test_target = np.zeros_like(test_idx)
+        test_label = np.vstack((test_idx, test_target)).transpose()
+
+        test_node = torch.from_numpy(np.array(test_label)[:, 0]).type(torch.cuda.LongTensor)
+        test_target = torch.from_numpy(np.array(test_label)[:, 1]).type(torch.cuda.LongTensor)
+        num_classes = torch.max(test_target).item() + 1
+
+        with torch.no_grad():
+            y_pred = model.forward(A, node_features, test_node, test_target, eval=True)
+
+        firstlen = len(batch[0]['nodes'])
+
+        for i, flake in enumerate(test_idx):
+            if flake < firstlen:
+                node_types = batch[0]['nodes'][flake]['type']
+            else:
+                node_types = batch[1]['nodes'][flake - firstlen]['type']
+            if ("MethodDeclaration" in node_types) or ("FieldDeclaration" in node_types):
+                print(float(y_pred[i, 1] - y_pred[i, 0]))
+
