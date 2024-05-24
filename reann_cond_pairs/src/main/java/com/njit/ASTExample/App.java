@@ -1,3 +1,5 @@
+package com.njit.ASTExample;
+
 import java.util.stream.Collectors;
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ParseResult;
