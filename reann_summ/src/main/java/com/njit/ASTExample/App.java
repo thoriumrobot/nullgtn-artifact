@@ -151,12 +151,19 @@ public class App {
 
     private static CompilationUnit createChunk(List<Node> nodes, BaseNames findnames) {
         CompilationUnit chunk = new CompilationUnit();
+        TypeDeclaration<?> primaryType = new ClassOrInterfaceDeclaration();
+        chunk.addType(primaryType);
+        
         for (Node node : nodes) {
             if (node instanceof TypeDeclaration) {
-                chunk.addType((TypeDeclaration<?>) node.clone());
+                primaryType = (TypeDeclaration<?>) node.clone();
+                chunk.setTypes(new NodeList<>(primaryType));
+            } else if (node instanceof Comment) {
+                chunk.addOrphanComment((Comment) node.clone());
+            } else if (node instanceof BodyDeclaration) {
+                primaryType.addMember((BodyDeclaration<?>) node.clone());
             } else {
-                chunk.addOrphanComment(node.getComment().orElse(null));
-                chunk.addOrphanComment(node.clone().getComment().orElse(null));
+                primaryType.addMember((BodyDeclaration<?>) node.clone());
             }
         }
         findnames.convert(chunk);
