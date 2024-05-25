@@ -46,32 +46,32 @@ public class App {
         try {
             File[] files = rootDir.listFiles();
             if (files == null) return;
-    
+
             for (File file : files) {
                 if (file.isDirectory() && file.toString().contains("/src/main")) {
                     HashMap<String, Integer> fileCount = new HashMap<>();
                     HashMap<String, ASTToGraphConverterSumm> converters = new HashMap<>();
                     HashMap<String, HashMap<Integer, Double>> scores = new HashMap<>();
-    
+
                     List<File[]> javaFilePairs = getJavaFilePairs(file.toString());
-    
+
                     List<CompilationUnit[]> batchCompilationUnits = new ArrayList<>();
                     List<File[]> batchPairs = new ArrayList<>();
                     int currentBatchSize = 0;
-    
+
                     for (File[] pair : javaFilePairs) {
                         CompilationUnit[] compilationUnits = new CompilationUnit[2];
-    
+
                         for (int i = 0; i < 2; i++) {
                             if (converters.containsKey(pair[i].getAbsolutePath())) {
                                 continue;
                             }
                             compilationUnits[i] = parseJavaFile(pair[i]);
                         }
-    
+
                         BaseNames[] findnames = new BaseNames[2];
                         int totCount = 0;
-    
+
                         for (int i = 0; i < 2; i++) {
                             if (compilationUnits[i] != null) {
                                 findnames[i] = new BaseNames();
@@ -79,7 +79,7 @@ public class App {
                                 totCount += findnames[i].totCount + findnames[i].nameList.size();
                             }
                         }
-    
+
                         // Chunking the AST if totCount exceeds 8000
                         if (totCount > 8000) {
                             List<CompilationUnit[]> chunks = chunkAST(compilationUnits, findnames, 8000);
@@ -91,9 +91,9 @@ public class App {
                             batchCompilationUnits.add(compilationUnits);
                             batchPairs.add(pair);
                         }
-    
+
                         currentBatchSize += totCount;
-    
+
                         if (currentBatchSize > 8000) {
                             processBatch(batchCompilationUnits, batchPairs, fileCount, converters, scores);
                             batchCompilationUnits.clear();
@@ -101,11 +101,11 @@ public class App {
                             currentBatchSize = 0;
                         }
                     }
-    
+
                     if (!batchCompilationUnits.isEmpty()) {
                         processBatch(batchCompilationUnits, batchPairs, fileCount, converters, scores);
                     }
-    
+
                     reannotateFiles(fileCount, converters, rootDir, subdir, scores);
                 } else if (file.isDirectory()) {
                     processJavaFiles(file, subdir + "/" + file.getName());
@@ -114,7 +114,7 @@ public class App {
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }
-    }    
+    }
 
     private static List<CompilationUnit[]> chunkAST(CompilationUnit[] compilationUnits, BaseNames[] findnames, int maxNodes) {
         List<CompilationUnit[]> chunks = new ArrayList<>();
@@ -125,7 +125,7 @@ public class App {
             List<Node> nodes = compilationUnits[i].getChildNodes();
             List<Node> currentChunk = new ArrayList<>();
             int currentCount = 0;
-    
+
             for (Node node : nodes) {
                 int nodeCount = countNodes(node);
                 if (currentCount + nodeCount > maxNodes) {
@@ -141,60 +141,64 @@ public class App {
                 chunks.add(new CompilationUnit[]{createChunk(currentChunk, findnames[i])});
             }
         }
-    
+
         return chunks;
     }
-    
+
     private static int countNodes(Node node) {
         return node.getChildNodes().size() + 1;
     }
-    
+
     private static CompilationUnit createChunk(List<Node> nodes, BaseNames findnames) {
         CompilationUnit chunk = new CompilationUnit();
         for (Node node : nodes) {
-            chunk.addOrphanComment(node.getComment().orElse(null));
-            chunk.add(node.clone());
+            if (node instanceof TypeDeclaration) {
+                chunk.addType((TypeDeclaration<?>) node.clone());
+            } else {
+                chunk.addOrphanComment(node.getComment().orElse(null));
+                chunk.addOrphanComment(node.clone().getComment().orElse(null));
+            }
         }
         findnames.convert(chunk);
         return chunk;
-    }    
+    }
 
     private static void processBatch(List<CompilationUnit[]> batchCompilationUnits, List<File[]> batchPairs, HashMap<String, Integer> fileCount, HashMap<String, ASTToGraphConverterSumm> converters, HashMap<String, HashMap<Integer, Double>> scores) throws IOException, InterruptedException {
         BufferedWriter writer = new BufferedWriter(new FileWriter(modDir + "temp_output.json", true));
-    
+
         for (int j = 0; j < batchPairs.size(); j++) {
             CompilationUnit[] compilationUnits = batchCompilationUnits.get(j);
             File[] pair = batchPairs.get(j);
-    
+
             for (int i = 0; i < 2; i++) {
                 if (converters.containsKey(pair[i].getAbsolutePath())) {
                     continue;
                 }
-    
+
                 ExpandNames growNames = new ExpandNames(new BaseNames().nameList);
                 growNames.convert(compilationUnits[i]);
-    
+
                 while (!growNames.nameList.equals(growNames.nameList_old)) {
                     growNames = new ExpandNames(growNames.nameList);
                     growNames.convert(compilationUnits[i]);
                 }
-    
+
                 converters.put(pair[i].getAbsolutePath(), new ASTToGraphConverterSumm(growNames.nameList));
                 converters.get(pair[i].getAbsolutePath()).convert(compilationUnits[i]);
             }
-    
+
             for (int i = 0; i < 2; i++) {
                 JSONObject graphJson = converters.get(pair[i].getAbsolutePath()).toJson();
                 writer.write(graphJson.toString(4) + "\n");
-    
+
                 BufferedWriter writer_cluster = new BufferedWriter(new FileWriter(modDir + "temp_output_" + i + ".json"));
                 writer_cluster.write(graphJson.toString(4) + "\n");
                 writer_cluster.close();
             }
         }
-    
+
         writer.close();
-    
+
         for (int i = 0; i < 2; i++) {
             ProcessBuilder processBuilder = new ProcessBuilder("python", modDir + "predkmm.py", String.valueOf(i), modDir);
             Process process = processBuilder.start();
@@ -205,23 +209,23 @@ public class App {
                 output.append(line).append("\n");
             }
             int exitCode = process.waitFor();
-    
+
             String cluster = (exitCode == 0) ? String.valueOf(output.toString().charAt(0)) : "1";
-    
+
             processBuilder = new ProcessBuilder("python", modDir + "GTN_comb/predict.py", cluster, modDir);
             process = processBuilder.start();
             reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
             exitCode = process.waitFor();
-    
+
             if (exitCode == 0) {
                 String filePath = batchPairs.get(i)[0].getAbsolutePath();
                 fileCount.putIfAbsent(filePath, 0);
                 fileCount.put(filePath, fileCount.get(filePath) + 1);
-    
+
                 scores.putIfAbsent(filePath, new HashMap<>());
                 String outputLine;
                 int lineCount = 0;
-    
+
                 while ((outputLine = reader.readLine()) != null) {
                     int rnno, fidx;
                     if (lineCount < converters.get(batchPairs.get(0)[0].getAbsolutePath()).rlvCount) {
@@ -231,30 +235,54 @@ public class App {
                         fidx = 1;
                         rnno = lineCount - converters.get(batchPairs.get(0)[0].getAbsolutePath()).rlvCount;
                     }
-    
+
                     scores.get(batchPairs.get(fidx)[0].getAbsolutePath()).putIfAbsent(rnno, 0.0);
                     scores.get(batchPairs.get(fidx)[0].getAbsolutePath()).put(rnno, scores.get(batchPairs.get(fidx)[0].getAbsolutePath()).get(rnno) + Double.parseDouble(outputLine));
-    
+
                     lineCount++;
                 }
             }
         }
         new File(modDir + "temp_output.json").delete();
-    }    
-    
-    private static int countNodes(Node node) {
-        return node.getChildNodes().size() + 1;
     }
-    
-    private static CompilationUnit createChunk(List<Node> nodes, BaseNames findnames) {
-        CompilationUnit chunk = new CompilationUnit();
-        for (Node node : nodes) {
-            chunk.addOrphanComment(node.getComment().orElse(null));
-            chunk.add(node.clone());
+
+    private static void reannotateFiles(HashMap<String, Integer> fileCount, HashMap<String, ASTToGraphConverterSumm> converters, File rootDir, String subdir, HashMap<String, HashMap<Integer, Double>> scores) throws IOException {
+        for (Map.Entry<String, Integer> entry : fileCount.entrySet()) {
+            File newFile = new File(entry.getKey());
+            ASTToGraphConverterSumm fileConverter = converters.get(entry.getKey());
+            CompilationUnit fileRoot = (CompilationUnit) fileConverter.storedRoot;
+
+            HashMap<Integer, Double> fileScores = scores.get(entry.getKey());
+
+            for (Map.Entry<Integer, Double> nodeEntry : fileScores.entrySet()) {
+                Node node;
+                if (!fileConverter.rlvNodes.isEmpty() && nodeEntry.getKey() < fileConverter.rlvNodes.size()) {
+                    node = fileConverter.rlvNodes.get(nodeEntry.getKey());
+                } else {
+                    continue;
+                }
+
+                if (((node instanceof MethodDeclaration) && nodeEntry.getValue() > fileCount.get(entry.getKey()) * 0.7341) || ((node instanceof FieldDeclaration) && nodeEntry.getValue() > fileCount.get(entry.getKey()) * 0.8449)) {
+                    ((NodeWithAnnotations<?>) node).addAnnotation("Nullable");
+                }
+            }
+
+            Path rootPath = rootDir.toPath();
+            Path rootSub = rootPath.relativize(newFile.toPath());
+
+            String dirPath = saveDir + subdir + "/" + rootSub.getParent() + "/";
+            File directory = new File(dirPath);
+
+            if (!directory.exists()) {
+                directory.mkdirs();
+            }
+
+            String filePath = dirPath + newFile.getName();
+            Files.write(Paths.get(filePath), fileRoot.toString().getBytes(StandardCharsets.UTF_8));
         }
-        findnames.convert(chunk);
-        return chunk;
-    }    
+        NullableParameterModifier.processProject(new File(saveDir + subdir + "/"));
+        NullableProcessorByName.nPBM(saveDir + subdir + "/");
+    }
 
     private static List<File> getJavaFiles(File dir) {
         List<File> javaFiles = new ArrayList<>();
