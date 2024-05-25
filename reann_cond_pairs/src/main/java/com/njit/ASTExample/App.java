@@ -38,32 +38,32 @@ public class App {
         try {
             File[] files = rootDir.listFiles();
             if (files == null) return;
-
+    
             for (File file : files) {
                 if (file.isDirectory() && file.toString().contains("/src/main")) {
                     HashMap<String, Integer> fileCount = new HashMap<>();
                     HashMap<String, ASTToGraphConverter> converters = new HashMap<>();
                     HashMap<String, HashMap<Integer, Double>> scores = new HashMap<>();
-
+    
                     List<File[]> javaFilePairs = getJavaFilePairs(file.toString());
-
+    
                     List<CompilationUnit[]> batchCompilationUnits = new ArrayList<>();
                     List<File[]> batchPairs = new ArrayList<>();
                     int currentBatchSize = 0;
-
+    
                     for (File[] pair : javaFilePairs) {
                         CompilationUnit[] compilationUnits = new CompilationUnit[2];
-
+    
                         for (int i = 0; i < 2; i++) {
                             if (converters.containsKey(pair[i].getAbsolutePath())) {
                                 continue;
                             }
                             compilationUnits[i] = parseJavaFile(pair[i]);
                         }
-
+    
                         BaseNames[] findnames = new BaseNames[2];
                         int totCount = 0;
-
+    
                         for (int i = 0; i < 2; i++) {
                             if (compilationUnits[i] != null) {
                                 findnames[i] = new BaseNames();
@@ -71,24 +71,24 @@ public class App {
                                 totCount += findnames[i].totCount + findnames[i].nameList.size();
                             }
                         }
-
+    
                         if (currentBatchSize + totCount > 8000) {
                             processBatch(batchCompilationUnits, batchPairs, fileCount, converters, scores);
                             batchCompilationUnits.clear();
                             batchPairs.clear();
                             currentBatchSize = 0;
                         }
-
+    
                         batchCompilationUnits.add(compilationUnits);
                         batchPairs.add(pair);
                         currentBatchSize += totCount;
                     }
-
+    
                     if (!batchCompilationUnits.isEmpty()) {
                         processBatch(batchCompilationUnits, batchPairs, fileCount, converters, scores);
                     }
-
-                    reannotateFiles(fileCount, converters, rootDir, subdir);
+    
+                    reannotateFiles(fileCount, converters, rootDir, subdir, scores);
                 } else if (file.isDirectory()) {
                     processJavaFiles(file, subdir + "/" + file.getName());
                 }
@@ -97,7 +97,7 @@ public class App {
             e.printStackTrace();
         }
     }
-
+    
     private static void processBatch(List<CompilationUnit[]> batchCompilationUnits, List<File[]> batchPairs, HashMap<String, Integer> fileCount, HashMap<String, ASTToGraphConverter> converters, HashMap<String, HashMap<Integer, Double>> scores) throws IOException, InterruptedException {
         BufferedWriter writer = new BufferedWriter(new FileWriter(modDir + "temp_output.json", true));
 
@@ -181,7 +181,7 @@ public class App {
         new File(modDir + "temp_output.json").delete();
     }
 
-    private static void reannotateFiles(HashMap<String, Integer> fileCount, HashMap<String, ASTToGraphConverter> converters, File rootDir, String subdir) throws IOException {
+    private static void reannotateFiles(HashMap<String, Integer> fileCount, HashMap<String, ASTToGraphConverter> converters, File rootDir, String subdir, HashMap<String, HashMap<Integer, Double>> scores) throws IOException {
         for (Map.Entry<String, Integer> entry : fileCount.entrySet()) {
             File newFile = new File(entry.getKey());
             ASTToGraphConverter fileConverter = converters.get(entry.getKey());
