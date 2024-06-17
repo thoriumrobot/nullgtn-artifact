@@ -4,9 +4,15 @@ import com.github.javaparser.JavaParser;
 import com.github.javaparser.ParseResult;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
+import com.github.javaparser.ast.body.BodyDeclaration;
+import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.nodeTypes.NodeWithAnnotations;
+import com.github.javaparser.ast.stmt.BlockStmt;
+import com.github.javaparser.ast.stmt.Statement;
+import com.github.javaparser.ast.ImportDeclaration;
+import com.github.javaparser.ast.PackageDeclaration;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -258,7 +264,7 @@ public class App {
             }
             visited.add(node);
 
-            sampledNodes.add(node);
+            sampledNodes.add(node.clone());
 
             // Update sampled nameList
             for (Map.Entry<String, List<Integer>> entry : nameList.entrySet()) {
@@ -281,10 +287,43 @@ public class App {
     }
 
     private static CompilationUnit rebuildCompilationUnit(List<Node> nodes) {
+        // Create a new CompilationUnit
         CompilationUnit cu = new CompilationUnit();
+
+        // Map to keep track of the original nodes and their cloned counterparts
+        Map<Node, Node> nodeMapping = new HashMap<>();
+
+        // First pass: clone all nodes and map them
         for (Node node : nodes) {
-            cu.add(node);
+            Node clonedNode = node.clone();
+            nodeMapping.put(node, clonedNode);
         }
+
+        // Second pass: set parent-child relationships in the cloned nodes
+        for (Node node : nodes) {
+            Node clonedNode = nodeMapping.get(node);
+            if (node.getParentNode().isPresent()) {
+                Node parentNode = node.getParentNode().get();
+                Node clonedParentNode = nodeMapping.get(parentNode);
+
+                if (clonedParentNode instanceof ClassOrInterfaceDeclaration) {
+                    ((ClassOrInterfaceDeclaration) clonedParentNode).addMember((BodyDeclaration<?>) clonedNode);
+                } else if (clonedParentNode instanceof CompilationUnit) {
+                    ((CompilationUnit) clonedParentNode).addType((ClassOrInterfaceDeclaration) clonedNode);
+                } else if (clonedParentNode instanceof BlockStmt) {
+                    ((BlockStmt) clonedParentNode).addStatement((Statement) clonedNode);
+                }
+            } else {
+                if (clonedNode instanceof ClassOrInterfaceDeclaration) {
+                    cu.addType((ClassOrInterfaceDeclaration) clonedNode);
+                } else if (clonedNode instanceof ImportDeclaration) {
+                    cu.addImport((ImportDeclaration) clonedNode);
+                } else if (clonedNode instanceof PackageDeclaration) {
+                    cu.setPackageDeclaration((PackageDeclaration) clonedNode);
+                }
+            }
+        }
+
         return cu;
     }
 
