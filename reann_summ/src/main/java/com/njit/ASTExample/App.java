@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -287,7 +288,6 @@ public class App {
     }
 
     private static CompilationUnit rebuildCompilationUnit(List<Node> nodes) {
-        // Create a new CompilationUnit
         CompilationUnit cu = new CompilationUnit();
 
         // Map to keep track of the original nodes and their cloned counterparts
@@ -306,12 +306,13 @@ public class App {
                 Node parentNode = node.getParentNode().get();
                 Node clonedParentNode = nodeMapping.get(parentNode);
 
-                if (clonedParentNode instanceof ClassOrInterfaceDeclaration) {
-                    ((ClassOrInterfaceDeclaration) clonedParentNode).addMember((BodyDeclaration<?>) clonedNode);
-                } else if (clonedParentNode instanceof CompilationUnit) {
-                    ((CompilationUnit) clonedParentNode).addType((ClassOrInterfaceDeclaration) clonedNode);
-                } else if (clonedParentNode instanceof BlockStmt) {
-                    ((BlockStmt) clonedParentNode).addStatement((Statement) clonedNode);
+                try {
+                    Method addMethod = findAddMethod(clonedParentNode, clonedNode);
+                    if (addMethod != null) {
+                        addMethod.invoke(clonedParentNode, clonedNode);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             } else {
                 if (clonedNode instanceof ClassOrInterfaceDeclaration) {
@@ -320,11 +321,31 @@ public class App {
                     cu.addImport((ImportDeclaration) clonedNode);
                 } else if (clonedNode instanceof PackageDeclaration) {
                     cu.setPackageDeclaration((PackageDeclaration) clonedNode);
+                } else {
+                    try {
+                        Method addMethod = findAddMethod(cu, clonedNode);
+                        if (addMethod != null) {
+                            addMethod.invoke(cu, clonedNode);
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         }
 
         return cu;
+    }
+
+    private static Method findAddMethod(Node parent, Node child) {
+        for (Method method : parent.getClass().getMethods()) {
+            if (method.getName().startsWith("add") && method.getParameterCount() == 1) {
+                if (method.getParameterTypes()[0].isAssignableFrom(child.getClass())) {
+                    return method;
+                }
+            }
+        }
+        return null;
     }
 
     private static List<File> getJavaFiles(File dir) {
