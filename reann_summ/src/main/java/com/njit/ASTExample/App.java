@@ -258,12 +258,21 @@ public class App {
         Queue<Node> queue = new LinkedList<>();
         queue.add(cu);
 
-        while (!queue.isEmpty() && sampledNodes.size() < maxNodes) {
+        int currentNodeCount = 0;
+
+        while (!queue.isEmpty() && currentNodeCount < maxNodes) {
             Node node = queue.poll();
             if (visited.contains(node)) {
                 continue;
             }
             visited.add(node);
+
+            // Only add node if adding it does not exceed maxNodes
+            int nodeSize = countNodes(node);
+            if (currentNodeCount + nodeSize > maxNodes) {
+                break;
+            }
+            currentNodeCount += nodeSize;
 
             sampledNodes.add(node.clone());
 
@@ -278,13 +287,21 @@ public class App {
             }
 
             for (Node child : node.getChildNodes()) {
-                if (!visited.contains(child) && sampledNodes.size() < maxNodes) {
+                if (!visited.contains(child)) {
                     queue.add(child);
                 }
             }
         }
 
         return new AbstractMap.SimpleEntry<>(sampledNodes, sampledNameList);
+    }
+
+    private static int countNodes(Node node) {
+        int count = 1; // Counting the current node
+        for (Node child : node.getChildNodes()) {
+            count += countNodes(child);
+        }
+        return count;
     }
 
     private static CompilationUnit rebuildCompilationUnit(List<Node> nodes) {
