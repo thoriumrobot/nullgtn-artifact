@@ -93,7 +93,7 @@ public class App {
                                         continue;
                                     }
 
-                                    Map.Entry<List<Node>, Map<String, List<Integer>>> sampled = sampleAST(compilationUnits[i], findnames[i].nameList, 8000);
+                                    Map.Entry<List<Node>, Map<String, Set<Integer>>> sampled = sampleAST(compilationUnits[i], findnames[i].nameList, 8000);
                                     findnames[i].nameList = sampled.getValue();
                                     compilationUnits[i] = rebuildCompilationUnit(sampled.getKey());
                                 }
@@ -250,9 +250,9 @@ public class App {
         }
     }
 
-    public static Map.Entry<List<Node>, Map<String, List<Integer>>> sampleAST(CompilationUnit cu, Map<String, List<Integer>> nameList, int maxNodes) {
+    public static Map.Entry<List<Node>, Map<String, Set<Integer>>> sampleAST(CompilationUnit cu, Map<String, Set<Integer>> nameList, int maxNodes) {
         List<Node> sampledNodes = new ArrayList<>();
-        Map<String, List<Integer>> sampledNameList = new HashMap<>();
+        Map<String, Set<Integer>> sampledNameList = new HashMap<>();
 
         Set<Node> visited = new HashSet<>();
         Queue<Node> queue = new LinkedList<>();
@@ -268,10 +268,10 @@ public class App {
             sampledNodes.add(node.clone());
 
             // Update sampled nameList
-            for (Map.Entry<String, List<Integer>> entry : nameList.entrySet()) {
+            for (Map.Entry<String, Set<Integer>> entry : nameList.entrySet()) {
                 for (Integer line : entry.getValue()) {
                     if (node.getBegin().isPresent() && node.getBegin().get().line == line) {
-                        sampledNameList.putIfAbsent(entry.getKey(), new ArrayList<>());
+                        sampledNameList.putIfAbsent(entry.getKey(), new HashSet<>());
                         sampledNameList.get(entry.getKey()).add(line);
                     }
                 }
