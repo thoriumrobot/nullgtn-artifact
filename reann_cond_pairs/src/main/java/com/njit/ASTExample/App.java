@@ -48,7 +48,7 @@ public class App {
             if (files == null) return;
 
             for (File file : files) {
-                if (file.isDirectory() && file.toString().contains("/src/main")) {
+                if (file.isDirectory() && file.toString().contains("/src")) {
                     HashMap<String, Integer> fileCount = new HashMap<>();
                     HashMap<String, ASTToGraphConverter> converters = new HashMap<>();
                     HashMap<String, HashMap<Integer, Double>> scores = new HashMap<>();
