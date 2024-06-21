@@ -53,7 +53,7 @@ public class App {
                 if (file.isDirectory()) {
                     processJavaFiles(file, subdir + "/" + file.getName());
                 } else if (file.getName().endsWith(".java")
-                        && file.toString().contains("/src/main/")) {
+                        && file.toString().contains("/src/")) {
                     CompilationUnit compilationUnit = parseJavaFile(file);
 
                     if (compilationUnit != null) {
